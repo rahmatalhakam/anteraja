@@ -28,7 +28,7 @@ namespace DriverService.Controllers
             try
             {
                 await _user.Registration(user);
-                await _user.AddRoleForUser(user.Username, "User");
+                await _user.AddRoleForUser(user.Username, "Driver");
 
                 return Ok($"Register for user {user.Username} success");
             }
