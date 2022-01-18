@@ -19,6 +19,7 @@ namespace AdminService.Data
         private UserManager<IdentityUser> _userManager;
         private RoleManager<IdentityRole> _roleManager;
         private AppSettings _appSettings;
+        
 
         public UserDAL(UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager,
             IOptions<AppSettings> appSettings)
@@ -26,12 +27,49 @@ namespace AdminService.Data
             _userManager = userManager;
             _roleManager = roleManager;
             _appSettings = appSettings.Value;
-        }
-        public Task AddRole(string rolename)
-        {
-            throw new NotImplementedException();
+           
         }
 
+        public async Task AddRole(string rolename)
+        {
+            IdentityResult roleResult;
+            try
+            {
+                var roleIsExist = await _roleManager.RoleExistsAsync(rolename);
+                if (roleIsExist)
+                    throw new Exception($"Role {rolename} already Exists");
+                roleResult = await _roleManager.CreateAsync(new IdentityRole(rolename));
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
+        public async Task AddRoleForUser(string username, string role)
+        {
+            var user = await _userManager.FindByNameAsync(username);
+            try
+            {
+                var result = await _userManager.AddToRoleAsync(user, role);
+                if (!result.Succeeded)
+                {
+
+                    StringBuilder errMsg = new StringBuilder(String.Empty);
+                    foreach (var err in result.Errors)
+                    {
+                        errMsg.Append(err.Description + " ");
+                    }
+                    throw new Exception($"{errMsg}");
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
+        
         public async Task<User> Authenticate(string username, string password)
         {
             var userFind = await _userManager.CheckPasswordAsync(
@@ -68,9 +106,20 @@ namespace AdminService.Data
         }
 
 
-        public IEnumerable<UsernameOutput> GetAllAdmins()
+        public IEnumerable<RoleOutput> GetAllRole()
         {
-           List<UsernameOutput> users = new List<UsernameOutput>();
+            List<RoleOutput> roles = new List<RoleOutput>();
+            var results = _roleManager.Roles;
+            foreach (var result in results)
+            {
+                roles.Add(new RoleOutput { Rolename = result.Name });
+            }
+            return roles;
+        }
+
+        public IEnumerable<UsernameOutput> GetAllUser()
+        {
+            List<UsernameOutput> users = new List<UsernameOutput>();
             var results = _userManager.Users;
             foreach (var result in results)
             {
@@ -79,10 +128,20 @@ namespace AdminService.Data
             return users;
         }
 
-        public Task<List<string>> GetRolesFromUser(string username)
+        public async Task<List<string>> GetRolesFromUser(string username)
         {
-            throw new NotImplementedException();
+            List<string> roles = new List<string>();
+            var user = await _userManager.FindByNameAsync(username);
+            if (user == null)
+                throw new Exception($"User {username} not found");
+            var results = await _userManager.GetRolesAsync(user);
+            foreach (var result in results)
+            {
+                roles.Add(result);
+            }
+            return roles;
         }
+
 
         public async Task Registration(RegisterInput user)
         {
@@ -90,7 +149,8 @@ namespace AdminService.Data
             {
                 var newUser = new IdentityUser { UserName = user.Username, Email = user.Email };
                 var result = await _userManager.CreateAsync(newUser, user.Password);
-
+            
+                
                 if (!result.Succeeded)
                 {
                 StringBuilder errMsg = new StringBuilder(String.Empty);
@@ -100,6 +160,9 @@ namespace AdminService.Data
                 }
                 throw new Exception($"{errMsg}");
                 }
+
+                
+
 
             }
             catch (Exception ex)

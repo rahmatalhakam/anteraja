@@ -14,11 +14,13 @@ namespace AdminService.Controllers
     public class UsersController : ControllerBase
     {
         private IUser _user;
+       
 
         public UsersController(IUser user)
         {
-        _user = user;
-    }
+             _user = user;
+            
+        }
 
          [HttpPost]
         public async Task<ActionResult> Registration([FromBody] RegisterInput user)
@@ -26,6 +28,8 @@ namespace AdminService.Controllers
             try
             {
                 await _user.Registration(user);
+                await _user.AddRoleForUser(user.Username, "Admin");
+                
                 return Ok($"Registrasi user {user.Username} berhasil");
             }
             catch (Exception ex)
@@ -39,7 +43,7 @@ namespace AdminService.Controllers
         {
             try
             {
-                var results = _user.GetAllAdmins();
+                var results = _user.GetAllUser();
                 return Ok(results);
             }
             catch (Exception ex)
@@ -47,6 +51,34 @@ namespace AdminService.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        // [HttpPost("Role")]
+        // public async Task<ActionResult> AddRole([FromBody] RoleOutput rolename)
+        // {
+        //     try
+        //     {
+        //         await _user.AddRole(rolename.Rolename);
+        //         return Ok($"Tambah role {UserRole.rolename} berhasil");
+        //     }
+        //     catch (Exception ex)
+        //     {
+        //         return BadRequest(ex.Message);
+        //     }
+        // }
+
+        // [HttpPost("UserInRole")]
+        // public async Task<ActionResult> AddRoleForUser(string username, string role)
+        // {
+        //     try
+        //     {
+        //         await _user.AddRoleForUser(username, role);
+        //         return Ok($"Data {username} and {role} successfully added");
+        //     }
+        //     catch (Exception ex)
+        //     {
+        //         return BadRequest(ex.Message);
+        //     }
+        // }
 
         [HttpPost("Authentication")]
         public async Task<ActionResult<User>> Authentication(LoginInput input)

@@ -14,6 +14,6 @@ namespace AdminService.Data
         {
 
         }
-        public DbSet<Admin> Admins { get; set; }
+       
     }
 }

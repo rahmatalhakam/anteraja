@@ -9,11 +9,11 @@ namespace AdminService.Data
 {
     public interface IUser
     {
-        IEnumerable<UsernameOutput> GetAllAdmins();
-        Task Registration(RegisterInput user);
+        IEnumerable<UsernameOutput> GetAllUser();
+        Task Registration(RegisterInput user );
         Task AddRole(string rolename);
-        //IEnumerable<RoleOutput> GetAllRole();
-        //Task AddRoleForUser(UserRole input);
+        IEnumerable<RoleOutput> GetAllRole();
+        Task AddRoleForUser(string username, string role);
         Task<List<string>> GetRolesFromUser(string username);
         Task<User> Authenticate(string username, string password);
     }
