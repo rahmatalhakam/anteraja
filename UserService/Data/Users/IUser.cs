@@ -17,5 +17,7 @@ namespace UserService.Data.Users
         Task AddRoleForUser(string username, string role);
         Task<List<string>> GetRolesFromUser(string username);
         Task<User> Authenticate(string username, string password);
+        Task LockUser(string username, bool isLock);
+        Task<UsernameOutput> GetUserById(string id);
     }
 }

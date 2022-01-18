@@ -17,6 +17,7 @@ namespace UserService.Data.Users
     public class UserDAL : IUser
     {
         private UserManager<IdentityUser> _userManager;
+
         private RoleManager<IdentityRole> _roleManager;
         private AppSettings _appSettings;
 
@@ -69,10 +70,17 @@ namespace UserService.Data.Users
 
         public async Task<User> Authenticate(string username, string password)
         {
+            var account = await _userManager.FindByNameAsync(username);
             var userFind = await _userManager.CheckPasswordAsync(
-                await _userManager.FindByNameAsync(username), password);
+              account, password);
             if (!userFind)
+            {
                 return null;
+            }
+            if (account.LockoutEnabled)
+            {
+                throw new Exception("Cannot Login, your account is Locked");
+            }
             var user = new User
             {
                 Username = username
@@ -140,11 +148,45 @@ namespace UserService.Data.Users
             return roles;
         }
 
+        public async Task<UsernameOutput> GetUserById(string id)
+        {
+            var user = await _userManager.FindByIdAsync(id);
+            if (user == null)
+            {
+                throw new Exception($"User with Id {id} not found");
+            }
+            if (user.LockoutEnabled)
+            {
+                throw new Exception($"User is locked");
+            }
+
+            var data = new UsernameOutput
+            {
+                Username = user.UserName
+            };
+
+            return data;
+
+        }
+
+        public async Task LockUser(string username, bool isLock)
+        {
+            var user = await _userManager.FindByNameAsync(username);
+            if (user == null)
+            {
+                throw new Exception($"User {username} not found");
+            }
+
+            var lockUser = await _userManager.SetLockoutEnabledAsync(user, isLock);
+
+        }
+
         public async Task Registration(RegisterInput user)
         {
             try
             {
-                var newUser = new IdentityUser { UserName = user.Username, Email = user.Email };
+                // Lockout = false; not locked;
+                var newUser = new IdentityUser { UserName = user.Username, Email = user.Email, LockoutEnabled = false };
                 var result = await _userManager.CreateAsync(newUser, user.Password);
 
 

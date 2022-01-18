@@ -127,5 +127,36 @@ namespace AuthService.Controllers
 
             }
         }
+        [AllowAnonymous]
+        [HttpPost("Lock")]
+        public async Task<ActionResult> LockUser(string username, bool isLock)
+        {
+            try
+            {
+                await _user.LockUser(username, isLock);
+                return Ok($"{username} Lock privilage is successfully updated to {isLock}");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        [AllowAnonymous]
+        [HttpGet("{id}")]
+        public async Task<ActionResult> GetUserById(string id)
+        {
+            {
+                try
+                {
+                    var result = await _user.GetUserById(id);
+                    return Ok(result);
+                }
+                catch (Exception ex)
+                {
+
+                    return BadRequest(ex.Message);
+                }
+            }
+        }
     }
 }
