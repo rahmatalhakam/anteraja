@@ -142,16 +142,20 @@ namespace UserService.Data.Users
 
         public async Task<List<string>> GetRolesFromUser(string username)
         {
-            List<string> roles = new List<string>();
+            List<string> listRoles = new List<string>();
+
             var user = await _userManager.FindByNameAsync(username);
             if (user == null)
-                throw new Exception($"User {username} not found");
-            var results = await _userManager.GetRolesAsync(user);
-            foreach (var result in results)
             {
-                roles.Add(result);
+                throw new Exception($"{username} does not exist");
             }
-            return roles;
+            var roles = await _userManager.GetRolesAsync(user);
+
+            foreach (var role in roles)
+            {
+                listRoles.Add(role);
+            }
+            return listRoles;
         }
 
         public async Task<UsernameOutput> GetUserById(string id)
@@ -168,7 +172,9 @@ namespace UserService.Data.Users
 
             var data = new UsernameOutput
             {
-                Username = user.UserName
+                Id = user.Id,
+                Username = user.UserName,
+                Role = GetRolesFromUser(user.UserName).Result
             };
 
             return data;
