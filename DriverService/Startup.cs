@@ -79,6 +79,7 @@ namespace DriverService
                     ValidateAudience = false
                 };
             });
+            services.AddTransient<DbInitializer>();
             services.AddScoped<IUser, UserDAL>();
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 

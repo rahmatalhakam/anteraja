@@ -25,9 +25,9 @@ namespace DriverService.Data
             {
                 await roleStore.CreateAsync(new IdentityRole { Name = "Admin", NormalizedName = "ADMIN" });
             }
-            if (!_context.Roles.Any(r => r.Name == "User"))
+            if (!_context.Roles.Any(r => r.Name == "Driver"))
             {
-                await roleStore.CreateAsync(new IdentityRole { Name = "USER", NormalizedName = "USER" });
+                await roleStore.CreateAsync(new IdentityRole { Name = "Driver", NormalizedName = "DRIVER" });
             }
             await _context.SaveChangesAsync();
 
