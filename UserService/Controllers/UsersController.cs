@@ -127,7 +127,7 @@ namespace AuthService.Controllers
 
             }
         }
-        [AllowAnonymous]
+        [Authorize(Roles = "Admin")]
         [HttpPost("Lock")]
         public async Task<ActionResult> LockUser(string username, bool isLock)
         {

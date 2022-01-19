@@ -135,7 +135,8 @@ namespace UserService.Data.Users
             var results = _userManager.Users;
             foreach (var result in results)
             {
-                users.Add(new UsernameOutput { Username = result.UserName });
+                var roles = GetRolesFromUser(result.UserName).Result;
+                users.Add(new UsernameOutput { Username = result.UserName, Id = result.Id, Role = roles });
             }
             return users;
         }
