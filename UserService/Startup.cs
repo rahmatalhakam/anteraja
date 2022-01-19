@@ -79,6 +79,7 @@ namespace UserService
                     ValidateAudience = false
                 };
             });
+            services.AddTransient<DbInitializer>();
             services.AddScoped<IUser, UserDAL>();
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
@@ -109,7 +110,7 @@ namespace UserService
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, AppDbContext context)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, AppDbContext context, DbInitializer seeder)
         {
             context.Database.Migrate();
             if (env.IsDevelopment())
@@ -118,6 +119,7 @@ namespace UserService
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "AuthService v1"));
             }
+            _ = seeder.Initialize();
 
             app.UseHttpsRedirection();
 
