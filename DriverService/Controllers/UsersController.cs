@@ -127,7 +127,7 @@ namespace DriverService.Controllers
 
             }
         }
-        [AllowAnonymous]
+        [Authorize(Roles = "Admin")]
         [HttpPost("Lock")]
         public async Task<ActionResult> LockUser(LockUserInput input)
         {

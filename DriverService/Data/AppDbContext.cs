@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using DriverService.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace DriverService.Data
@@ -10,7 +11,7 @@ namespace DriverService.Data
 
         }
 
-
+        public DbSet<DriverProfile> DriverProfiles { get; set; }
 
     }
 }
