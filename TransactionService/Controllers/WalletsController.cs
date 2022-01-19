@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Mvc;
 using TransactionService.Data;
 using TransactionService.Dtos;
 using TransactionService.Models;
+using TransactionService.SyncDataService;
 
 namespace TransactionService.Controllers
 {
@@ -23,41 +24,51 @@ namespace TransactionService.Controllers
     private readonly IMapper _mapper;
     private readonly IWalletUser _walletUser;
     private readonly IWalletMutation _walletMutation;
+    private readonly IUserDataClient _userClient;
+    private readonly IDriverDataClient _driverClient;
 
-    public WalletsController(IWalletUser walletUser, IMapper mapper, IWalletMutation walletMutation)
+    public WalletsController(IWalletUser walletUser, IMapper mapper, IWalletMutation walletMutation, IUserDataClient userClient, IDriverDataClient driverClient)
     {
       _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
       _walletUser = walletUser;
       _walletMutation = walletMutation;
+      _userClient = userClient;
+      _driverClient = driverClient;
     }
 
     [HttpPost("Users")]
-    // [Authorize(Roles = "USER,DRIVER")]
+    [Authorize(Roles = "User,Driver")]
     public async Task<ActionResult<WalletUserOutput>> UserPost([FromBody] WalletUserInput input)
     {
       try
       {
-        // TODO: check user id beneran ada atau tidak
         string roleName = User.FindFirst(ClaimTypes.Role)?.Value;
+        if (roleName == "Driver" && !await _driverClient.GetById(input.CustomerId))
+          throw new Exception($"Driver id: {input.CustomerId} is not found");
+        if (roleName == "User" && !await _userClient.GetById(input.CustomerId))
+          throw new Exception($"User id: {input.CustomerId} is not found");
         var walletUserObj = new WalletUser { CustomerId = input.CustomerId, Rolename = roleName, CreatedAt = DateTime.Now };
         var result = await _walletUser.Insert(walletUserObj);
         return Ok(_mapper.Map<WalletUserOutput>(result));
       }
       catch (System.Exception ex)
       {
-        return BadRequest(ex);
+        return BadRequest(ex.Message);
       }
     }
 
     [HttpPost("Mutations/TopUp")]
-    // [Authorize(Roles = "USER,DRIVER")]
+    [Authorize(Roles = "User,Driver")]
     public async Task<ActionResult<MutationOutput>> Topup([FromBody] TopUpInput input)
     {
       try
       {
+        string roleName = User.FindFirst(ClaimTypes.Role)?.Value;
         var walletUser = await _walletUser.GetById(input.WalletUserId);
         if (walletUser == null)
           throw new Exception($"Wallet user id: {input.WalletUserId} not found");
+        if (walletUser.Rolename != roleName)
+          return Forbid();
         var dto = _mapper.Map<WalletMutation>(input);
         dto.CreatedAt = DateTime.Now;
         dto.WalletUser = walletUser;
@@ -71,7 +82,7 @@ namespace TransactionService.Controllers
           dto.Saldo = walletMutation.Saldo + input.Credit;
         }
         var result = await _walletMutation.Insert(dto);
-        return Ok(result);
+        return Ok(_mapper.Map<MutationOutput>(result));
       }
       catch (System.Exception ex)
       {
@@ -80,13 +91,17 @@ namespace TransactionService.Controllers
     }
 
     [HttpPost("Mutations/Withdraw")]
+    [Authorize(Roles = "User,Driver")]
     public async Task<ActionResult<MutationOutput>> Withdraw([FromBody] WithdrawInput input)
     {
       try
       {
+        string roleName = User.FindFirst(ClaimTypes.Role)?.Value;
         var walletUser = await _walletUser.GetById(input.WalletUserId);
         if (walletUser == null)
           throw new Exception($"Wallet user id: {input.WalletUserId} not found");
+        if (walletUser.Rolename != roleName)
+          return Forbid();
         var dto = _mapper.Map<WalletMutation>(input);
         dto.CreatedAt = DateTime.Now;
         dto.WalletUser = walletUser;
@@ -101,11 +116,34 @@ namespace TransactionService.Controllers
         }
         dto.Saldo = walletMutation.Saldo - input.Debit;
         var result = await _walletMutation.Insert(dto);
-        return Ok(result);
+        return Ok(_mapper.Map<MutationOutput>(result));
       }
       catch (System.Exception ex)
       {
         return BadRequest(ex.Message);
+      }
+    }
+
+    [HttpGet("Mutations/Saldo/{id}")]
+    [Authorize(Roles = "User,Driver")]
+    public async Task<ActionResult<MutationOutput>> GetSaldo(int id)
+    {
+      try
+      {
+        // TODO: cek lagi ketika sudah ada mutasinya dan lebih dari 1
+        string roleName = User.FindFirst(ClaimTypes.Role)?.Value;
+        var walletUser = await _walletUser.GetById(id);
+        if (walletUser == null)
+          throw new Exception($"Wallet user id: {id} not found");
+        if (walletUser.Rolename != roleName)
+          return Forbid();
+        var walletMutation = await _walletMutation.GetByWalletUserId(id);
+        if (walletMutation == null) return BadRequest($"Cannot get saldo, no mutations found. Topup first!");
+        return Ok(_mapper.Map<MutationOutput>(walletMutation));
+      }
+      catch (System.Exception ex)
+      {
+        return BadRequest(ex);
       }
     }
   }

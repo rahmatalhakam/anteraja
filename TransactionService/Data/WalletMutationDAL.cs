@@ -26,7 +26,7 @@ namespace TransactionService.Data
 
     public Task<WalletMutation> GetByWalletUserId(int id)
     {
-      var result = _db.WalletMutations.Where(w => w.WalletUserId == id).Last();
+      var result = _db.WalletMutations.Where(w => w.WalletUserId == id).OrderBy(w => w.Id).LastOrDefault();
       return Task.FromResult(result);
     }
 

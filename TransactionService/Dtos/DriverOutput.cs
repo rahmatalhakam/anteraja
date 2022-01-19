@@ -5,7 +5,7 @@ namespace TransactionService.Dtos
 {
   public class DriverOutput
   {
-    public int Id { get; set; }
+    public string Username { get; set; }
 
   }
 }

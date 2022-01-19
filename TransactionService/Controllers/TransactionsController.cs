@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TransactionService.Data;
 using TransactionService.Dtos;
 using TransactionService.Helpers;
 using TransactionService.Models;
+using TransactionService.SyncDataService;
 
 namespace TransactionService.Controllers
 {
@@ -19,21 +21,28 @@ namespace TransactionService.Controllers
   {
     private readonly IMapper _mapper;
     private readonly ITransaction _transaction;
+    private readonly IUserDataClient _userClient;
+    private readonly IDriverDataClient _driverClient;
 
-    public TransactionsController(Data.ITransaction transaction, IMapper mapper)
+    public TransactionsController(Data.ITransaction transaction, IMapper mapper, IUserDataClient userClient, IDriverDataClient driverClient)
     {
       _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
       _transaction = transaction;
+      _userClient = userClient;
+      _driverClient = driverClient;
     }
 
 
     [HttpPost]
-    // [Authorize(Roles = "DRIVER")]
+    [Authorize(Roles = "Driver")]
     public async Task<ActionResult<TransactionOutput>> Post([FromBody] TransactionInput input)
     {
-
       try
       {
+        if (!await _userClient.GetById(input.UserId))
+          throw new Exception($"User id: {input.UserId} is not found");
+        if (!await _driverClient.GetById(input.DriverId))
+          throw new Exception($"Driver id: {input.DriverId} is not found");
         var model = _mapper.Map<Transaction>(input);
         int distance = Convert.ToInt32(Coordinate.DistanceTo(input.LatStart, input.LongStart, input.LatEnd, input.LongEnd));
         if (distance > 30)
@@ -52,15 +61,17 @@ namespace TransactionService.Controllers
     }
 
     [HttpGet("customer/{id}")]
-    // [Authorize(Roles = "DRIVER,USER")]
+    [Authorize(Roles = "Driver,User")]
     public async Task<ActionResult<IEnumerable<TransactionOutput>>> GetById(string id)
     {
       try
       {
         //TODO: benerin lagi
         string roleName = User.FindFirst(ClaimTypes.Role)?.Value;
-        roleName = "DRIVER";
-        Console.WriteLine("role: " + roleName);
+        if (roleName == "Driver" && !await _driverClient.GetById(id))
+          throw new Exception($"Driver id: {id} is not found");
+        if (roleName == "User" && !await _userClient.GetById(id))
+          throw new Exception($"User id: {id} is not found");
         var result = await _transaction.GetByCustomerId(id, roleName);
         return Ok(_mapper.Map<IEnumerable<TransactionOutput>>(result));
       }
@@ -71,7 +82,7 @@ namespace TransactionService.Controllers
     }
 
     [HttpGet]
-    // [Authorize(Roles = "ADMIN")]
+    [Authorize(Roles = "Admin")]
     public async Task<ActionResult<IEnumerable<TransactionOutput>>> GetAll()
     {
       try

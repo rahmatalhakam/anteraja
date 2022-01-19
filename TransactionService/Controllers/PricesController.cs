@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TransactionService.Data;
 using TransactionService.Dtos;
@@ -23,7 +24,7 @@ namespace TransactionService.Controllers
     }
 
     [HttpGet]
-    // [Authorize(Roles = "ADMIN")]
+    [Authorize(Roles = "Admin")]
     public async Task<ActionResult<IEnumerable<Price>>> GetPrices()
     {
       try
@@ -38,7 +39,7 @@ namespace TransactionService.Controllers
     }
 
     [HttpPost]
-    // [Authorize(Roles = "ADMIN")]
+    [Authorize(Roles = "Admin")]
     public async Task<ActionResult<Price>> Post([FromBody] PriceInput input)
     {
       try
@@ -54,7 +55,7 @@ namespace TransactionService.Controllers
     }
 
     [HttpPut("{id}")]
-    // [Authorize(Roles = "ADMIN")]
+    [Authorize(Roles = "Admin")]
     public async Task<ActionResult<Price>> Put(int id, [FromBody] PriceInput input)
     {
       try

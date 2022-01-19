@@ -15,7 +15,7 @@ namespace TransactionService.Data
 
     public Task<WalletUser> GetByCustomerId(string customerId)
     {
-      var result = _db.WalletUsers.Where(w => w.CustomerId == customerId).First();
+      var result = _db.WalletUsers.Where(w => w.CustomerId == customerId).FirstOrDefault();
       return Task.FromResult(result);
     }
 
@@ -28,7 +28,7 @@ namespace TransactionService.Data
     public async Task<WalletUser> Insert(WalletUser obj)
     {
       var walletUserObj = GetByCustomerId(obj.CustomerId);
-      if (walletUserObj != null)
+      if (walletUserObj.Result != null)
         throw new System.Exception($"Customer id: {obj.CustomerId} is already registered.");
       var result = await _db.WalletUsers.AddAsync(obj);
       await _db.SaveChangesAsync();

@@ -21,12 +21,12 @@ namespace TransactionService.Data
 
     public async Task<IEnumerable<Transaction>> GetByCustomerId(string id, string rolename)
     {
-      if (rolename == "DRIVER")
+      if (rolename == "Driver")
       {
         var result = await _db.Transactions.Include(t => t.StatusOrder).Where(t => t.DriverId == id).ToListAsync();
         return result;
       }
-      else if (rolename == "USER")
+      else if (rolename == "User")
       {
         var result = await _db.Transactions.Include(t => t.StatusOrder).Where(t => t.UserId == id).ToListAsync();
         return result;

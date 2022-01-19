@@ -10,21 +10,21 @@ using TransactionService.Helpers;
 
 namespace TransactionService.SyncDataService
 {
-  public class DriverDataClient : IDriverDataClient
+  public class UserDataClient : IUserDataClient
   {
     // TODO: buat get by id
 
     private readonly HttpClient _httpClient;
     private readonly AppSettings _appSettings;
 
-    public DriverDataClient(HttpClient httpClient, IOptions<AppSettings> appSettings)
+    public UserDataClient(HttpClient httpClient, IOptions<AppSettings> appSettings)
     {
       _httpClient = httpClient;
       _appSettings = appSettings.Value;
     }
     public async Task<bool> GetById(string UserId)
     {
-      var response = await _httpClient.GetAsync(_appSettings.DriverUrl + "/api/Users/" + UserId);
+      var response = await _httpClient.GetAsync(_appSettings.UserUrl + "/api/Users/" + UserId);
       Console.WriteLine(response.StatusCode);
       if (response.IsSuccessStatusCode)
       {
