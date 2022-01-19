@@ -18,6 +18,7 @@ using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
 using TransactionService.Data;
 using TransactionService.Helpers;
+using TransactionService.SyncDataService;
 
 namespace TransactionService
 {
@@ -76,6 +77,9 @@ namespace TransactionService
       services.AddScoped<IPrice, PriceDAL>();
       services.AddScoped<IWalletUser, WalletUserDAL>();
 
+      services.AddHttpClient<IUserDataClient, UserDataClient>();
+      services.AddHttpClient<IDriverDataClient, DriverDataClient>();
+
       services.AddControllers().AddNewtonsoftJson(options =>
             options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore)
                 .AddXmlDataContractSerializerFormatters();
@@ -121,6 +125,7 @@ namespace TransactionService
 
       app.UseRouting();
 
+      app.UseAuthentication();
       app.UseAuthorization();
 
       app.UseEndpoints(endpoints =>

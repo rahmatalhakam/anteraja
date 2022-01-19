@@ -10,6 +10,8 @@ namespace TransactionService.Dtos
     public float Billing { get; set; }
     public float PricePerKM { get; set; }
 
+    public string Area { get; set; }
+
 
   }
 }

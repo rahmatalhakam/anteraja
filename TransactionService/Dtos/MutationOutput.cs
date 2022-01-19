@@ -12,11 +12,12 @@ namespace TransactionService.Dtos
 
     public int WalletUserId { get; set; } //fk
 
+    public string Rolename { get; set; }
+
     public float Saldo { get; set; }
 
     public DateTime CreatedAt { get; set; }
 
-    public WalletUserOutput WalletUserOutput { get; set; }
 
   }
 }

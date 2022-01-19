@@ -5,8 +5,8 @@ using TransactionService.Models;
 
 namespace TransactionService.SyncDataService
 {
-  public interface IDriver
+  public interface IDriverDataClient
   {
-    Task<DriverOutput> GetById(int UserId);
+    Task<bool> GetById(string UserId);
   }
 }
