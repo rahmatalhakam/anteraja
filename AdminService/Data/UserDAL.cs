@@ -19,15 +19,14 @@ namespace AdminService.Data
         private UserManager<IdentityUser> _userManager;
         private RoleManager<IdentityRole> _roleManager;
         private AppSettings _appSettings;
-        private AppDbContext _db;
-
+        
         public UserDAL(UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager,
-            IOptions<AppSettings> appSettings, AppDbContext db)
+            IOptions<AppSettings> appSettings)
         {
             _userManager = userManager;
             _roleManager = roleManager;
             _appSettings = appSettings.Value;
-             _db = db;
+             
            
         }
 
@@ -73,13 +72,23 @@ namespace AdminService.Data
         
         public async Task<User> Authenticate(string username, string password)
         {
-            var userFind = await _userManager.CheckPasswordAsync(
-                await _userManager.FindByNameAsync(username), password);
-            if (!userFind)
+            var account = await _userManager.FindByNameAsync(username);
+            if (account == null)
+            {
                 return null;
+            }
+            var userFind = await _userManager.CheckPasswordAsync(
+              account, password);
+            if (!userFind)
+            {
+                return null;
+            }
+           
             var user = new User
             {
+                Id = account.Id,
                 Username = username
+
             };
 
             List<Claim> claims = new List<Claim>();
@@ -106,8 +115,6 @@ namespace AdminService.Data
             return user;
         }
 
-        
-
         public IEnumerable<RoleOutput> GetAllRole()
         {
             List<RoleOutput> roles = new List<RoleOutput>();
@@ -125,7 +132,9 @@ namespace AdminService.Data
             var results = _userManager.Users;
             foreach (var result in results)
             {
+                users.Add(new UsernameOutput { Id = result.Id });
                 users.Add(new UsernameOutput { Username = result.UserName });
+                //users.Add(new UsernameOutput { Role = result.GetRolesFromUser()});
             }
             return users;
         }
@@ -133,35 +142,39 @@ namespace AdminService.Data
 
         public async Task<List<string>> GetRolesFromUser(string username)
         {
-            List<string> roles = new List<string>();
+            List<string> listRoles = new List<string>();
+
             var user = await _userManager.FindByNameAsync(username);
             if (user == null)
-                throw new Exception($"User {username} not found");
-            var results = await _userManager.GetRolesAsync(user);
-            foreach (var result in results)
             {
-                roles.Add(result);
+                throw new Exception($"{username} does not exist");
             }
-            return roles;
+            var roles = await _userManager.GetRolesAsync(user);
+
+            foreach (var role in roles)
+            {
+                listRoles.Add(role);
+            }
+            return listRoles;
         }
 
 
         public async Task<UsernameOutput> GetUserById(string id)
         {
-             var user = await _userManager.FindByIdAsync(id);
+            var user = await _userManager.FindByIdAsync(id);
             if (user == null)
             {
                 throw new Exception($"User with Id {id} not found");
             }
 
-            var data = new UsernameOutput
+            var byiddto = new UsernameOutput
             {
                 Id = user.Id,
                 Username = user.UserName,
-                // Role = GetRolesFromUser(user.UserName).Result
+                Role = GetRolesFromUser(user.UserName).Result
             };
 
-            return data;
+            return byiddto;
         }
 
         public async Task Registration(RegisterInput user)
@@ -170,7 +183,7 @@ namespace AdminService.Data
             {
                 var newUser = new IdentityUser { UserName = user.Username, Email = user.Email };
                 var result = await _userManager.CreateAsync(newUser, user.Password);
-            
+                var userFind = await _userManager.FindByNameAsync(user.Username);
                 
                 if (!result.Succeeded)
                 {

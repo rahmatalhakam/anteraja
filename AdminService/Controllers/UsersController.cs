@@ -78,7 +78,7 @@ namespace AdminService.Controllers
 
         [AllowAnonymous]
         [HttpGet("{id}")]
-        public async Task<ActionResult> GetUserById(string id)
+        public async Task<ActionResult<UsernameOutput>> GetUserById(string id)
         {
             {
                 try
