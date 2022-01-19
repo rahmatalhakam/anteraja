@@ -9,10 +9,10 @@ namespace TransactionService.Models
     public int Id { get; set; }
 
     [Required]
-    public int UserId { get; set; }
+    public string UserId { get; set; }
 
     [Required]
-    public int DriverId { get; set; }
+    public string DriverId { get; set; }
 
     [Required]
     public int PriceId { get; set; } //fk

@@ -15,6 +15,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Newtonsoft.Json;
 using TransactionService.Data;
 using TransactionService.Helpers;
 
@@ -69,6 +70,11 @@ namespace TransactionService
           ValidateAudience = false
         };
       });
+
+      services.AddScoped<ITransaction, TransactionDAL>();
+      services.AddScoped<IWalletMutation, WalletMutationDAL>();
+      services.AddScoped<IPrice, PriceDAL>();
+      services.AddScoped<IWalletUser, WalletUserDAL>();
 
       services.AddControllers().AddNewtonsoftJson(options =>
             options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore)

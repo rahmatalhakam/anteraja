@@ -15,7 +15,7 @@ namespace TransactionService.Models
     public string Rolename { get; set; }
 
     [Required]
-    public int CustomerId { get; set; }
+    public string CustomerId { get; set; }
 
     [Required]
     public DateTime CreatedAt { get; set; }
