@@ -71,6 +71,10 @@ namespace UserService.Data.Users
         public async Task<User> Authenticate(string username, string password)
         {
             var account = await _userManager.FindByNameAsync(username);
+            if (account == null)
+            {
+                return null;
+            }
             var userFind = await _userManager.CheckPasswordAsync(
               account, password);
             if (!userFind)
@@ -83,7 +87,9 @@ namespace UserService.Data.Users
             }
             var user = new User
             {
+                Id = account.Id,
                 Username = username
+
             };
 
             List<Claim> claims = new List<Claim>();
