@@ -71,6 +71,10 @@ namespace DriverService.Data.Users
         public async Task<User> Authenticate(LoginInput input)
         {
             var account = await _userManager.FindByNameAsync(input.Username);
+            if (account == null)
+            {
+                return null;
+            }
             var userFind = await _userManager.CheckPasswordAsync(
               account, input.Password);
             if (!userFind)
@@ -83,6 +87,7 @@ namespace DriverService.Data.Users
             }
             var user = new User
             {
+                Id = account.Id,
                 Username = input.Username
             };
 
@@ -188,6 +193,8 @@ namespace DriverService.Data.Users
                 // Lockout = false; not locked;
                 var newUser = new IdentityUser { UserName = user.Username, Email = user.Email, LockoutEnabled = false };
                 var result = await _userManager.CreateAsync(newUser, user.Password);
+                var userFind = await _userManager.FindByNameAsync(user.Username);
+                await _userManager.SetLockoutEnabledAsync(userFind, false);
 
 
                 if (!result.Succeeded)
