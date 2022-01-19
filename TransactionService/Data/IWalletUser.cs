@@ -7,5 +7,6 @@ namespace TransactionService.Data
   {
     Task<WalletUser> Insert(WalletUser obj);
     Task<WalletUser> GetById(int id);
+    Task<WalletUser> GetByCustomerId(string id);
   }
 }

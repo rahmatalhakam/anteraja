@@ -146,5 +146,21 @@ namespace TransactionService.Controllers
         return BadRequest(ex);
       }
     }
+    [HttpGet("Users/Customers/{id}")]
+    [Authorize(Roles = "User,Driver")]
+    public async Task<ActionResult<WalletUserOutput>> GetByCustomerId(string id)
+    {
+      try
+      {
+        var result = await _walletUser.GetByCustomerId(id);
+        if (result == null)
+          throw new System.Exception($"Customer id: {id} is not found.");
+        return Ok(_mapper.Map<WalletUserOutput>(result));
+      }
+      catch (System.Exception ex)
+      {
+        return BadRequest(ex);
+      }
+    }
   }
 }
