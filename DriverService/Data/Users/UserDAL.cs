@@ -191,10 +191,10 @@ namespace DriverService.Data.Users
             try
             {
                 // Lockout = false; not locked;
-                var newUser = new IdentityUser { UserName = user.Username, Email = user.Email, LockoutEnabled = false };
+                var newUser = new IdentityUser { UserName = user.Username, Email = user.Email };
                 var result = await _userManager.CreateAsync(newUser, user.Password);
                 var userFind = await _userManager.FindByNameAsync(user.Username);
-                await _userManager.SetLockoutEnabledAsync(userFind, false);
+                await _userManager.SetLockoutEnabledAsync(userFind, true);
 
 
                 if (!result.Succeeded)

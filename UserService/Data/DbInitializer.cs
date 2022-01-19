@@ -22,11 +22,6 @@ namespace UserService.Data
 
             if (userManager.FindByEmailAsync("admin@admin.com").Result == null)
             {
-                IdentityUser user = new IdentityUser
-                {
-                    UserName = "Admin",
-                    Email = "admin@admin.com"
-                };
                 if (!_context.Roles.Any(r => r.Name == "Admin"))
                 {
                     await roleStore.CreateAsync(new IdentityRole { Name = "Admin", NormalizedName = "ADMIN" });
@@ -36,6 +31,12 @@ namespace UserService.Data
                     await roleStore.CreateAsync(new IdentityRole { Name = "User", NormalizedName = "USER" });
                 }
                 await _context.SaveChangesAsync();
+
+                IdentityUser user = new IdentityUser
+                {
+                    UserName = "Admin",
+                    Email = "admin@admin.com"
+                };
 
                 IdentityResult result = userManager.CreateAsync(user, "Admin@123").Result;
 
