@@ -86,7 +86,7 @@ namespace UserService
             services.AddControllers();
             services.AddSwaggerGen(c =>
               {
-                  c.SwaggerDoc("v1", new OpenApiInfo { Title = "AuthService", Version = "v1" });
+                  c.SwaggerDoc("v1", new OpenApiInfo { Title = "UserService", Version = "v1" });
                   var securitySchema = new OpenApiSecurityScheme
                   {
 
@@ -117,7 +117,7 @@ namespace UserService
             {
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "AuthService v1"));
+                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "UserService v1"));
             }
             _ = seeder.Initialize();
 

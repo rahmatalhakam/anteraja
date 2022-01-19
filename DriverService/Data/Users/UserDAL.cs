@@ -71,6 +71,10 @@ namespace DriverService.Data.Users
         public async Task<User> Authenticate(LoginInput input)
         {
             var account = await _userManager.FindByNameAsync(input.Username);
+            if (account == null)
+            {
+                return null;
+            }
             var userFind = await _userManager.CheckPasswordAsync(
               account, input.Password);
             if (!userFind)
@@ -83,6 +87,7 @@ namespace DriverService.Data.Users
             }
             var user = new User
             {
+                Id = account.Id,
                 Username = input.Username
             };
 
