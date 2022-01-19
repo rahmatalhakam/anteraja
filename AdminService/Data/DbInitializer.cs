@@ -15,16 +15,42 @@ namespace AdminService.Data
     {
         _context = context;
     }
-
-         public async Task  Initialize()
+        
+         public async Task  Initialize(UserManager<IdentityUser> userManager)
         {
+            _context.Database.EnsureCreated();
            var roleStore = new RoleStore<IdentityRole>(_context);
+            
+            if (userManager.FindByEmailAsync("admin@admin.com").Result== null)
+            {
+                IdentityUser user = new IdentityUser
+                {
+                    UserName ="Admin",
+                    Email = "admin@admin.com"
+                };
+                 if (!_context.Roles.Any(r => r.Name == "Admin"))
+                {
+                    await roleStore.CreateAsync(new IdentityRole { Name = "Admin", NormalizedName="ADMIN"});
+                }
+                 if (!_context.Roles.Any(r => r.Name == "User"))
+                {
+                    await roleStore.CreateAsync(new IdentityRole { Name = "User", NormalizedName="USER"});
+                }
+               
+                await _context.SaveChangesAsync();
+                
+                IdentityResult result= userManager.CreateAsync(user,"Admin@123").Result;
 
-        if (!_context.Roles.Any(r => r.Name == "Admin"))
-        {
-            await roleStore.CreateAsync(new IdentityRole { Name = "Admin", NormalizedName="ADMIN"});
-        }
-        await _context.SaveChangesAsync();
+                if (result.Succeeded)
+                {
+                    userManager.AddToRoleAsync(user, "Admin").Wait();
+                    userManager.SetLockoutEnabledAsync(user, false).Wait();
+                }
+
+
+            }
+           
+           
 
         }
     }

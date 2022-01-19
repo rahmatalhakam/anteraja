@@ -19,14 +19,15 @@ namespace AdminService.Data
         private UserManager<IdentityUser> _userManager;
         private RoleManager<IdentityRole> _roleManager;
         private AppSettings _appSettings;
-        
+        private AppDbContext _db;
 
         public UserDAL(UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager,
-            IOptions<AppSettings> appSettings)
+            IOptions<AppSettings> appSettings, AppDbContext db)
         {
             _userManager = userManager;
             _roleManager = roleManager;
             _appSettings = appSettings.Value;
+             _db = db;
            
         }
 
@@ -105,6 +106,7 @@ namespace AdminService.Data
             return user;
         }
 
+        
 
         public IEnumerable<RoleOutput> GetAllRole()
         {
@@ -128,6 +130,7 @@ namespace AdminService.Data
             return users;
         }
 
+
         public async Task<List<string>> GetRolesFromUser(string username)
         {
             List<string> roles = new List<string>();
@@ -142,6 +145,24 @@ namespace AdminService.Data
             return roles;
         }
 
+
+        public async Task<UsernameOutput> GetUserById(string id)
+        {
+             var user = await _userManager.FindByIdAsync(id);
+            if (user == null)
+            {
+                throw new Exception($"User with Id {id} not found");
+            }
+
+            var data = new UsernameOutput
+            {
+                Id = user.Id,
+                Username = user.UserName,
+                // Role = GetRolesFromUser(user.UserName).Result
+            };
+
+            return data;
+        }
 
         public async Task Registration(RegisterInput user)
         {
@@ -161,14 +182,13 @@ namespace AdminService.Data
                 throw new Exception($"{errMsg}");
                 }
 
-                
-
-
             }
             catch (Exception ex)
             {
                 throw new Exception($"{ex.Message}");
             }
         }
+
+        
     }
 }

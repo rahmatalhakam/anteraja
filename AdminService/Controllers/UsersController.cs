@@ -5,6 +5,9 @@ using System.Threading.Tasks;
 using AdminService.Data;
 using AdminService.Dtos;
 using AdminService.Models;
+using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AdminService.Controllers
@@ -14,14 +17,16 @@ namespace AdminService.Controllers
     public class UsersController : ControllerBase
     {
         private IUser _user;
-       
+        private IMapper _mapper;
 
-        public UsersController(IUser user)
+        public UsersController(IUser user, IMapper mapper)
         {
              _user = user;
+             _mapper = mapper;
             
         }
 
+         [AllowAnonymous]
          [HttpPost]
         public async Task<ActionResult> Registration([FromBody] RegisterInput user)
         {
@@ -52,34 +57,9 @@ namespace AdminService.Controllers
             }
         }
 
-        // [HttpPost("Role")]
-        // public async Task<ActionResult> AddRole([FromBody] RoleOutput rolename)
-        // {
-        //     try
-        //     {
-        //         await _user.AddRole(rolename.Rolename);
-        //         return Ok($"Tambah role {UserRole.rolename} berhasil");
-        //     }
-        //     catch (Exception ex)
-        //     {
-        //         return BadRequest(ex.Message);
-        //     }
-        // }
+       
 
-        // [HttpPost("UserInRole")]
-        // public async Task<ActionResult> AddRoleForUser(string username, string role)
-        // {
-        //     try
-        //     {
-        //         await _user.AddRoleForUser(username, role);
-        //         return Ok($"Data {username} and {role} successfully added");
-        //     }
-        //     catch (Exception ex)
-        //     {
-        //         return BadRequest(ex.Message);
-        //     }
-        // }
-
+        [AllowAnonymous]
         [HttpPost("Authentication")]
         public async Task<ActionResult<User>> Authentication(LoginInput input)
         {
@@ -93,6 +73,24 @@ namespace AdminService.Controllers
             {
                 return BadRequest(ex.Message);
 
+            }
+        }
+
+        [AllowAnonymous]
+        [HttpGet("{id}")]
+        public async Task<ActionResult> GetUserById(string id)
+        {
+            {
+                try
+                {
+                    var result = await _user.GetUserById(id);
+                    return Ok(result);
+                }
+                catch (Exception ex)
+                {
+
+                    return BadRequest(ex.Message);
+                }
             }
         }
 
