@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DriverService.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20220119055226_init migration")]
-    partial class initmigration
+    [Migration("20220119105808_Initial migration")]
+    partial class Initialmigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

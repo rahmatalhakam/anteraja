@@ -81,6 +81,11 @@ namespace UserService
             });
             services.AddTransient<DbInitializer>();
             services.AddScoped<IUser, UserDAL>();
+
+
+            services.AddControllers().AddNewtonsoftJson(options =>
+           options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore)
+               .AddXmlDataContractSerializerFormatters();
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
             services.AddControllers();
@@ -110,7 +115,7 @@ namespace UserService
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, AppDbContext context, DbInitializer seeder)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, AppDbContext context, DbInitializer seeder, UserManager<IdentityUser> userManager)
         {
             context.Database.EnsureCreated();
             if (env.IsDevelopment())
@@ -119,7 +124,7 @@ namespace UserService
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "UserService v1"));
             }
-            _ = seeder.Initialize();
+            _ = seeder.Initialize(userManager);
 
             app.UseHttpsRedirection();
 
