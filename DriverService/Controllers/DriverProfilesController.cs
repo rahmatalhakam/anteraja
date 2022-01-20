@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using DriverService.Data.DriverProfiles;
 using DriverService.Dtos.DriverProfiles;
+using DriverService.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DriverService.Controllers
@@ -57,7 +58,7 @@ namespace DriverService.Controllers
             return Ok(_mapper.Map<DriverProfileDto>(result));
         }
         [HttpPost("Position")]
-        public async Task<ActionResult<DriverProfileDto>> SetPosition([FromBody] SetLongLatInput input)
+        public async Task<ActionResult<DriverProfile>> SetPosition([FromBody] SetLongLatInput input)
         {
             try
             {

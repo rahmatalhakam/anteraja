@@ -119,31 +119,30 @@ namespace DriverService.Data.DriverProfiles
 
             try
             {
-                var result = await GetById(currentDriverId);
+                var result = await GetProfileById();
+
                 if (result == null)
                 {
                     throw new Exception($"Cannot set Position, please set your profile first.");
                 }
-
                 var data = new DriverProfile
                 {
+                    DriverId = currentDriverId,
                     DriverProfileId = result.DriverProfileId,
-                    DriverId = result.DriverId,
                     FirstName = result.FirstName,
                     LastName = result.LastName,
-                    LongNow = input.LongNow,
-                    LatNow = input.LatNow
+                    LongNow = result.LongNow,
+                    LatNow = result.LatNow
                 };
-
                 _context.Entry(result).CurrentValues.SetValues(data);
-                await _context.SaveChangesAsync();
-
-                return data;
+                _context.SaveChanges();
+                return input;
             }
-            catch (DbUpdateException dbEx)
+            catch (Exception dbEx)
             {
                 throw new Exception($"Error: {dbEx.Message}");
             }
+
         }
 
         public async Task<DriverProfile> Update(string id, DriverProfile obj)

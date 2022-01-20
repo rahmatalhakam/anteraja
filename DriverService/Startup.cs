@@ -83,6 +83,11 @@ namespace DriverService
             services.AddTransient<DbInitializer>();
             services.AddScoped<IUser, UserDAL>();
             services.AddScoped<IDriverProfile, DriverProfileDAL>();
+
+
+            services.AddControllers().AddNewtonsoftJson(options =>
+         options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore)
+             .AddXmlDataContractSerializerFormatters();
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
             services.AddControllers();
