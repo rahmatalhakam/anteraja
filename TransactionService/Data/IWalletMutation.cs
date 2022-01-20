@@ -8,5 +8,6 @@ namespace TransactionService.Data
     Task<WalletMutation> Insert(WalletMutation obj);
     Task<WalletMutation> GetById(int id);
     Task<WalletMutation> GetByWalletUserId(int id);
+    Task<WalletMutation> GetByCustomerId(string customerId);
   }
 }

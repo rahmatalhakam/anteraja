@@ -10,6 +10,7 @@ namespace TransactionService.Data
     Task<Price> Update(int id, Price obj);
     Task<IEnumerable<Price>> GetAll();
     Task<Price> GetById(int id);
+    Task<Price> GetFeeByArea(string area);
 
   }
 }

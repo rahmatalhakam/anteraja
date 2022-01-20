@@ -1,5 +1,6 @@
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using TransactionService.Models;
 
 namespace TransactionService.Data
@@ -29,6 +30,13 @@ namespace TransactionService.Data
       var result = _db.WalletMutations.Where(w => w.WalletUserId == id).OrderBy(w => w.Id).LastOrDefault();
       return Task.FromResult(result);
     }
+
+    public async Task<WalletMutation> GetByCustomerId(string customerId)
+    {
+      var walletUser = await _db.WalletUsers.Where(w => w.CustomerId == customerId).Include(w => w.WalletMutations).FirstAsync();
+      return walletUser.WalletMutations.OrderBy(m => m.Id).LastOrDefault();
+    }
+
 
     public async Task<WalletMutation> Insert(WalletMutation obj)
     {

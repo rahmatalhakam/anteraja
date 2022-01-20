@@ -24,15 +24,16 @@ namespace TransactionService.Controllers
     private readonly IUserDataClient _userClient;
     private readonly IDriverDataClient _driverClient;
     private readonly IWalletMutation _walletMutation;
-
     private readonly IWalletUser _walletUser;
+    private readonly IPrice _price;
 
     public TransactionsController(IWalletUser walletUser,
                                   IMapper mapper,
                                   IWalletMutation walletMutation,
                                   IUserDataClient userClient,
                                   IDriverDataClient driverClient,
-                                  Data.ITransaction transaction)
+                                  Data.ITransaction transaction,
+                                  IPrice price)
     {
       _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
       _transaction = transaction;
@@ -40,6 +41,7 @@ namespace TransactionService.Controllers
       _driverClient = driverClient;
       _walletMutation = walletMutation;
       _walletUser = walletUser;
+      _price = price;
     }
 
 
@@ -74,19 +76,19 @@ namespace TransactionService.Controllers
       }
     }
 
-    [HttpGet("customer/{id}")]
+    [HttpGet("search")]
     [Authorize(Roles = "Driver,User")]
-    public async Task<ActionResult<IEnumerable<TransactionOutput>>> GetById(string id)
+    public async Task<ActionResult<IEnumerable<TransactionOutput>>> GetById([FromQuery] string customerId)
     {
       try
       {
         //TODO: benerin lagi
         string roleName = User.FindFirst(ClaimTypes.Role)?.Value;
-        if (roleName == "Driver" && !await _driverClient.GetById(id))
-          throw new Exception($"Driver id: {id} is not found");
-        if (roleName == "User" && !await _userClient.GetById(id))
-          throw new Exception($"User id: {id} is not found");
-        var result = await _transaction.GetByCustomerId(id, roleName);
+        if (roleName == "Driver" && !await _driverClient.GetById(customerId))
+          throw new Exception($"Driver id: {customerId} is not found");
+        if (roleName == "User" && !await _userClient.GetById(customerId))
+          throw new Exception($"User id: {customerId} is not found");
+        var result = await _transaction.GetByCustomerId(customerId, roleName);
         return Ok(_mapper.Map<IEnumerable<TransactionOutput>>(result));
       }
       catch (System.Exception ex)
@@ -188,30 +190,47 @@ namespace TransactionService.Controllers
       }
     }
 
-    // [HttpPost("fee")]
-    // [Authorize(Roles = "USER")]
-    // public async Task<ActionResult<FeeOutput>> TransactionFee([FromBody] FeeInput input)
-    // {
-    //   try
-    //   {
-    // int distance = Convert.ToInt32(Coordinate.DistanceTo(input.LatStart, input.LongStart, input.LatEnd, input.LongEnd));
-    // if (distance > 30)
-    // {
-    //   return BadRequest("Maximum distance is 30 Km");
-    // }
-    // if (input.Area == null)
-    //   input.Area = "BASE";
-    // var result = await _transaction.GetFeeByUserId(input.Area, distance);
-    // return Ok(result);
-    //   return Ok();
-    // }
-    // catch (System.Exception ex)
-    // {
-    //   return BadRequest(ex.Message);
-    // }
-    // }
+    [HttpPost("fee")]
+    [Authorize(Roles = "User")]
+    public async Task<ActionResult<FeeOutput>> TransactionFee([FromBody] FeeInput input)
+    {
+      try
+      {
+        if (!await _userClient.GetById(input.UserId))
+          throw new Exception($"User id: {input.UserId} is not found");
+        var userWallet = await _walletUser.GetByCustomerId(input.UserId);
+        if (userWallet == null)
+          throw new System.Exception($"Wallet Customer id: {input.UserId} is not found.");
+        int distance = Convert.ToInt32(Coordinate.DistanceTo(input.LatStart, input.LongStart, input.LatEnd, input.LongEnd));
+        if (distance > 30)
+        {
+          return BadRequest("Maximum distance is 30 Km");
+        }
 
+        var fee = await _price.GetFeeByArea(input.Area);
+        var mutation = await _walletMutation.GetByWalletUserId(userWallet.Id);
+        var feeOutput = new FeeOutput { UserId = input.UserId, distance = distance, Billing = distance * fee.PricePerKM, PricePerKM = fee.PricePerKM, Area = fee.Area };
+        if (mutation.Saldo < distance * fee.PricePerKM)
+        {
+          feeOutput.canOrder = false;
+        }
+        else
+        {
+          feeOutput.canOrder = true;
+        }
+        return Ok(feeOutput);
+      }
+      catch (System.Exception ex)
+      {
+        return BadRequest(ex);
+      }
+    }
 
+    [HttpGet("distance")]
+    public ActionResult<int> GetDistance(double lat1, double long1, double lat2, double long2)
+    {
+      return Ok(Convert.ToInt32(Coordinate.DistanceTo(lat1, long1, lat2, long2, 'K')));
+    }
 
 
 

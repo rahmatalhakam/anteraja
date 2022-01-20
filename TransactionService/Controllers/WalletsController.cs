@@ -49,6 +49,7 @@ namespace TransactionService.Controllers
           throw new Exception($"User id: {input.CustomerId} is not found");
         var walletUserObj = new WalletUser { CustomerId = input.CustomerId, Rolename = roleName, CreatedAt = DateTime.Now };
         var result = await _walletUser.Insert(walletUserObj);
+        var walletMutation = await _walletMutation.Insert(new WalletMutation { CreatedAt = DateTime.Now, Credit = 0, Saldo = 0, Debit = 0, WalletUserId = result.Id });
         return Ok(_mapper.Map<WalletUserOutput>(result));
       }
       catch (System.Exception ex)
@@ -124,13 +125,12 @@ namespace TransactionService.Controllers
       }
     }
 
-    [HttpGet("Mutations/Saldo/{id}")]
+    [HttpGet("Mutations/{id}")]
     [Authorize(Roles = "User,Driver")]
-    public async Task<ActionResult<MutationOutput>> GetSaldo(int id)
+    public async Task<ActionResult<MutationOutput>> GetById(int id)
     {
       try
       {
-        // TODO: cek lagi ketika sudah ada mutasinya dan lebih dari 1
         string roleName = User.FindFirst(ClaimTypes.Role)?.Value;
         var walletUser = await _walletUser.GetById(id);
         if (walletUser == null)
@@ -146,15 +146,40 @@ namespace TransactionService.Controllers
         return BadRequest(ex);
       }
     }
-    [HttpGet("Users/Customers/{id}")]
+
+    [HttpGet("Mutations/search")]
     [Authorize(Roles = "User,Driver")]
-    public async Task<ActionResult<WalletUserOutput>> GetByCustomerId(string id)
+    public async Task<ActionResult<MutationOutput>> GetMutationByCustomerId(string customerId)
     {
       try
       {
-        var result = await _walletUser.GetByCustomerId(id);
+        string roleName = User.FindFirst(ClaimTypes.Role)?.Value;
+        var walletUser = await _walletUser.GetByCustomerId(customerId);
+        if (walletUser == null)
+          throw new Exception($"Wallet customer id: {customerId} not found");
+        if (walletUser.Rolename != roleName)
+          return Forbid();
+        var walletMutation = await _walletMutation.GetByCustomerId(customerId);
+        if (walletMutation == null) return BadRequest($"Cannot get saldo, no mutations found. Topup first!");
+        return Ok(_mapper.Map<MutationOutput>(walletMutation));
+      }
+      catch (System.Exception ex)
+      {
+        return BadRequest(ex);
+      }
+    }
+
+
+
+    [HttpGet("Users/search")]
+    [Authorize(Roles = "User,Driver")]
+    public async Task<ActionResult<WalletUserOutput>> GetUserByCustomerId([FromQuery] string customerId)
+    {
+      try
+      {
+        var result = await _walletUser.GetByCustomerId(customerId);
         if (result == null)
-          throw new System.Exception($"Customer id: {id} is not found.");
+          throw new System.Exception($"Customer id: {customerId} is not found.");
         return Ok(_mapper.Map<WalletUserOutput>(result));
       }
       catch (System.Exception ex)

@@ -11,7 +11,7 @@ namespace TransactionService.Dtos
     public float PricePerKM { get; set; }
 
     public string Area { get; set; }
-
+    public bool canOrder { get; set; }
 
   }
 }
