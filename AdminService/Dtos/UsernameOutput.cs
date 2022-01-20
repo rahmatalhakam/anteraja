@@ -9,6 +9,6 @@ namespace AdminService.Dtos
     {
         public string Id { get; set; }
         public string Username { get; set; }
-        public IList<string> Role { get; set; }
+        public List<string> Role { get; set; }
     }
 }

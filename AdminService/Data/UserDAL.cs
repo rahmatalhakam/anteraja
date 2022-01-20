@@ -126,13 +126,13 @@ namespace AdminService.Data
             return roles;
         }
 
-        public async Task<IEnumerable<UsernameOutput>> GetAllUser()
+        public IEnumerable<UsernameOutput> GetAllUser()
         {
             List<UsernameOutput> users = new List<UsernameOutput>();
             var results = _userManager.Users;
             foreach(var result in results)
             {
-                var roles = await _userManager.GetRolesAsync(result);
+                var roles = GetRolesFromUser(result.UserName).Result;
                 users.Add(new UsernameOutput {Id = result.Id, Username = result.UserName, Role = roles});
             }
             return users;
@@ -202,14 +202,14 @@ namespace AdminService.Data
 
         
 
-        //    public async Task Update(string id)
-        //     {
-        //         IdentityUser user = await _userManager.FindByIdAsync(id);
-        //         if (user == null)
-        //         {
-        //             throw new Exception($"User with Id {id} not found");
-        //         }
-        //     }
+           public async Task Update(string id)
+            {
+                IdentityUser user = await _userManager.FindByIdAsync(id);
+                if (user == null)
+                {
+                    throw new Exception($"User with Id {id} not found");
+                }
+            }
 
 
     }
