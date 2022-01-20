@@ -44,5 +44,19 @@ namespace TransactionService.Data
       await _db.SaveChangesAsync();
       return result;
     }
+
+    public Task<Price> GetFeeByArea(string area)
+    {
+      try
+      {
+        if (area == null) area = "BASE";
+        var price = _db.Prices.Where(p => p.Area.ToLower().Contains(area.ToLower())).SingleOrDefault();
+        return Task.FromResult(price);
+      }
+      catch (System.Exception)
+      {
+        throw;
+      }
+    }
   }
 }
