@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: adminservice-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: adminservice
+  template:
+    metadata:
+      labels:
+        app: adminservice
+    spec:
+      containers:
+      - name: adminservice
+        image: dwichynngrm/adminservice:latest
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: adminservice-clusterip-srv
+spec:
+  type: ClusterIP
+  selector:
+    app: adminservice
+  ports:
+  - name: adminservice
+    protocol: TCP
+    port: 80
+    targetPort: 80

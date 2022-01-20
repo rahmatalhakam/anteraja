@@ -130,15 +130,13 @@ namespace AdminService.Data
         {
             List<UsernameOutput> users = new List<UsernameOutput>();
             var results = _userManager.Users;
-            foreach (var result in results)
+            foreach(var result in results)
             {
-                users.Add(new UsernameOutput { Id = result.Id });
-                users.Add(new UsernameOutput { Username = result.UserName });
-                //users.Add(new UsernameOutput { Role = result.GetRolesFromUser()});
+                var roles = GetRolesFromUser(result.UserName).Result;
+                users.Add(new UsernameOutput {Id = result.Id, Username = result.UserName, Role = roles});
             }
             return users;
         }
-
 
         public async Task<List<string>> GetRolesFromUser(string username)
         {
@@ -203,5 +201,16 @@ namespace AdminService.Data
         }
 
         
+
+           public async Task Update(string id)
+            {
+                IdentityUser user = await _userManager.FindByIdAsync(id);
+                if (user == null)
+                {
+                    throw new Exception($"User with Id {id} not found");
+                }
+            }
+
+
     }
 }
