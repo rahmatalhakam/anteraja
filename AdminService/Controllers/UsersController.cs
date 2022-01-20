@@ -48,7 +48,8 @@ namespace AdminService.Controllers
             }
         }
 
-         [HttpGet]
+        [Authorize(Roles = "Admin")]
+        [HttpGet]
         public ActionResult<UsernameOutput> GetAll()
         {
             try
@@ -81,7 +82,7 @@ namespace AdminService.Controllers
             }
         }
 
-        [AllowAnonymous]
+        [Authorize(Roles = "Admin")]
         [HttpGet("{id}")]
         public async Task<ActionResult<UsernameOutput>> GetUserById(string id)
         {
@@ -128,7 +129,7 @@ namespace AdminService.Controllers
         //     }
         //     else
         //         ModelState.AddModelError("", "User Not Found");
-        //     return user;
+        //     return null;
         // }
  
         // private void Errors(IdentityResult result)
