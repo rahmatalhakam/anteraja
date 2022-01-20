@@ -8,7 +8,8 @@ namespace DriverService.Models
 {
     public class DriverProfile
     {
-
+        [Key]
+        public int DriverProfileId { get; set; }
         public string DriverId { get; set; }
 
         public string FirstName { get; set; }
@@ -16,6 +17,6 @@ namespace DriverService.Models
         public double LongNow { get; set; }
         public double LatNow { get; set; }
 
-        public User Users { get; set; }
+
     }
 }
