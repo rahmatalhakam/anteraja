@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: driverservice-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: driverservice
+  template:
+    metadata:
+      labels:
+        app: driverservice
+    spec:
+      containers:
+      - name: driverservice
+        image: dwichynngrm/driverservice:latest
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: driverservice-clusterip-srv
+spec:
+  type: ClusterIP
+  selector:
+    app: driverservice
+  ports:
+  - name: driverservice
+    protocol: TCP
+    port: 80
+    targetPort: 80
