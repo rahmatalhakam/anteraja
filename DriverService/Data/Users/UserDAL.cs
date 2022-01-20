@@ -93,6 +93,7 @@ namespace DriverService.Data.Users
 
             List<Claim> claims = new List<Claim>();
             claims.Add(new Claim(ClaimTypes.Name, user.Username));
+            claims.Add(new Claim("DriverId", user.Id.ToString()));
 
             var roles = await GetRolesFromUser(input.Username);
             foreach (var role in roles)

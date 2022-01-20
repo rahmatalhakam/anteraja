@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DriverService.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20220119105808_Initial migration")]
-    partial class Initialmigration
+    [Migration("20220120044731_add DriverProfile Table")]
+    partial class addDriverProfileTable
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -20,6 +20,33 @@ namespace DriverService.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("ProductVersion", "5.0.13")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+            modelBuilder.Entity("DriverService.Models.DriverProfile", b =>
+                {
+                    b.Property<int>("DriverProfileId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("DriverId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FirstName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LastName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<double>("LatNow")
+                        .HasColumnType("float");
+
+                    b.Property<double>("LongNow")
+                        .HasColumnType("float");
+
+                    b.HasKey("DriverProfileId");
+
+                    b.ToTable("DriverProfiles");
+                });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {

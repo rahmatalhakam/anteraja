@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DriverService.Data;
+using DriverService.Data.DriverProfiles;
 using DriverService.Data.Users;
 using DriverService.Handlers;
 using DriverService.Helpers;
@@ -60,9 +61,13 @@ namespace DriverService
         options.Password.RequireDigit = true;
       }).AddDefaultTokenProviders().AddEntityFrameworkStores<AppDbContext>();
 
+      services.AddControllers().AddNewtonsoftJson(options =>
+        options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore)
+       .AddXmlDataContractSerializerFormatters();
+      services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
       var kafkaConfig = Configuration.GetSection("KafkaConfig");
       services.Configure<KafkaConfig>(kafkaConfig);
-
       var appSettingSection = Configuration.GetSection("AppSettings");
       services.Configure<AppSettings>(appSettingSection);
       var appSettings = appSettingSection.Get<AppSettings>();
@@ -86,6 +91,7 @@ namespace DriverService
       services.AddTransient<DbInitializer>();
       services.AddTransient<TopicInitHandler>();
       services.AddScoped<IUser, UserDAL>();
+      services.AddScoped<IDriverProfile, DriverProfileDAL>();
       services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
       services.AddControllers();
