@@ -66,10 +66,7 @@ namespace DriverService.Data.DriverProfiles
             }
 
             var result = await _context.DriverProfiles.Where(s => s.DriverId == currentDriverId).SingleOrDefaultAsync<DriverProfile>();
-            if (result != null)
-                return result;
-            else
-                throw new Exception("Profile not Found, please set yout profile");
+            return result;
 
         }
 
@@ -82,18 +79,27 @@ namespace DriverService.Data.DriverProfiles
                 throw new Exception("Account not found");
             }
 
-
-            var data = new DriverProfile
-            {
-                DriverId = currentDriverId,
-                FirstName = obj.FirstName,
-                LastName = obj.LastName,
-            };
-
+            var profile = GetProfileById().Result;
             try
             {
+                var data = new DriverProfile
+                {
+                    DriverId = currentDriverId,
+                    FirstName = obj.FirstName,
+                    LastName = obj.LastName,
 
-                _context.DriverProfiles.Add(data);
+                };
+
+                if (profile != null)
+                {
+                    profile.FirstName = obj.FirstName;
+                    profile.LastName = obj.LastName;
+                }
+                else
+                {
+                    _context.DriverProfiles.Add(data);
+                }
+
                 await _context.SaveChangesAsync();
                 return data;
 
@@ -106,6 +112,7 @@ namespace DriverService.Data.DriverProfiles
 
         public async Task<DriverProfile> SetPosition(DriverProfile input)
         {
+
             var currentDriverId = _httpContextAccessor.HttpContext.User.FindFirstValue("DriverId");
             var driver = _context.Users.Where(u => u.Id == currentDriverId).SingleOrDefault();
             if (driver == null)
@@ -114,53 +121,62 @@ namespace DriverService.Data.DriverProfiles
             }
             if (driver.LockoutEnabled)
             {
-                throw new Exception("Cannot set location, your account is locked");
+                throw new Exception("Cannot setup location, your account is locked");
             }
+
 
             try
             {
-                var result = await GetProfileById();
-
-                if (result == null)
+                var findProfile = GetProfileById().Result;
+                if (findProfile == null)
                 {
-                    throw new Exception($"Cannot set Position, please set your profile first.");
+                    throw new Exception("Cannot set the location, setup your profile first");
                 }
-                var data = new DriverProfile
-                {
-                    DriverId = currentDriverId,
-                    DriverProfileId = result.DriverProfileId,
-                    FirstName = result.FirstName,
-                    LastName = result.LastName,
-                    LongNow = result.LongNow,
-                    LatNow = result.LatNow
-                };
-                _context.Entry(result).CurrentValues.SetValues(data);
-                _context.SaveChanges();
-                return input;
+
+                findProfile.LongNow = input.LongNow;
+                findProfile.LatNow = input.LatNow;
+                await _context.SaveChangesAsync();
+                input.DriverProfileId = findProfile.DriverProfileId;
+                input.DriverId = findProfile.DriverId;
+
+                return findProfile;
+
             }
-            catch (Exception dbEx)
+            catch (Exception ex)
             {
-                throw new Exception($"Error: {dbEx.Message}");
+
+                throw new Exception($"Error: {ex.Message}");
             }
 
         }
 
-        public async Task<DriverProfile> Update(string id, DriverProfile obj)
+        public async Task<DriverProfile> Update(DriverProfile obj)
         {
+            var currentDriverId = _httpContextAccessor.HttpContext.User.FindFirstValue("DriverId");
+            var driver = _context.Users.Where(u => u.Id == currentDriverId).SingleOrDefault();
+            if (driver == null)
+            {
+                throw new Exception("Account not found");
+            }
+            if (driver.LockoutEnabled)
+            {
+                throw new Exception("Cannot update profile, your account is locked");
+            }
+
             try
             {
-                var result = await GetById(id);
-                if (result == null)
+                var profile = GetProfileById().Result;
+                if (profile == null)
                 {
-                    throw new Exception($"Profile with Id {id} not found");
+                    throw new Exception("Cannot update profile, setup your profile first");
                 }
-                result.FirstName = obj.FirstName;
-                result.LastName = obj.LastName;
-                result.LongNow = obj.LongNow;
-                result.LatNow = obj.LatNow;
+                profile.FirstName = obj.FirstName;
+                profile.LastName = obj.LastName;
+                profile.LongNow = obj.LongNow;
+                profile.LatNow = obj.LatNow;
                 await _context.SaveChangesAsync();
-                obj.DriverProfileId = Convert.ToInt32(id);
-                obj.DriverId = result.DriverId;
+                obj.DriverProfileId = profile.DriverProfileId;
+                obj.DriverId = profile.DriverId;
                 return obj;
             }
             catch (DbUpdateException dbEx)

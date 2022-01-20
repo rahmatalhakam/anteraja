@@ -16,6 +16,7 @@ namespace DriverService.Profiles
 
             CreateMap<Dtos.DriverProfiles.DriverProfileInput, Models.DriverProfile>();
             CreateMap<Dtos.DriverProfiles.SetLongLatInput, Models.DriverProfile>();
+            CreateMap<Dtos.DriverProfiles.UpdateDriverProfileInput, Models.DriverProfile>();
         }
     }
 }

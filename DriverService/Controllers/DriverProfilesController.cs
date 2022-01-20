@@ -6,6 +6,7 @@ using AutoMapper;
 using DriverService.Data.DriverProfiles;
 using DriverService.Dtos.DriverProfiles;
 using DriverService.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DriverService.Controllers
@@ -22,6 +23,8 @@ namespace DriverService.Controllers
             _driverProfile = driverProfile;
             _mapper = mapper;
         }
+
+        [Authorize(Roles = "Admin")]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<DriverProfileDto>>> Get()
         {
@@ -58,7 +61,7 @@ namespace DriverService.Controllers
             return Ok(_mapper.Map<DriverProfileDto>(result));
         }
         [HttpPost("Position")]
-        public async Task<ActionResult<DriverProfile>> SetPosition([FromBody] SetLongLatInput input)
+        public async Task<ActionResult<DriverProfileDto>> SetPosition([FromBody] SetLongLatInput input)
         {
             try
             {
@@ -69,6 +72,24 @@ namespace DriverService.Controllers
             }
             catch (Exception ex)
             {
+                return BadRequest(ex.Message);
+            }
+        }
+        [HttpPut]
+        public async Task<ActionResult<DriverProfileDto>> Update([FromBody] UpdateDriverProfileInput input)
+        {
+            try
+            {
+                var profile = _mapper.Map<DriverProfile>(input);
+                var result = await _driverProfile.Update(profile);
+                var dto = _mapper.Map<DriverProfileDto>(result);
+
+                // return Ok(dto);
+                return Ok(new { Message = "Update Success", data = dto });
+            }
+            catch (System.Exception ex)
+            {
+
                 return BadRequest(ex.Message);
             }
         }
