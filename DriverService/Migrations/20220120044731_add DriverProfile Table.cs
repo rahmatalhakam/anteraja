@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace DriverService.Migrations
 {
-    public partial class Initialmigration : Migration
+    public partial class addDriverProfileTable : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -44,6 +44,23 @@ namespace DriverService.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "DriverProfiles",
+                columns: table => new
+                {
+                    DriverProfileId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    DriverId = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    FirstName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    LastName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    LongNow = table.Column<double>(type: "float", nullable: false),
+                    LatNow = table.Column<double>(type: "float", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_DriverProfiles", x => x.DriverProfileId);
                 });
 
             migrationBuilder.CreateTable(
@@ -208,6 +225,9 @@ namespace DriverService.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetUserTokens");
+
+            migrationBuilder.DropTable(
+                name: "DriverProfiles");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");

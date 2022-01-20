@@ -31,7 +31,6 @@ namespace DriverService.Data
                 {
                     await roleStore.CreateAsync(new IdentityRole { Name = "Driver", NormalizedName = "DRIVER" });
                 }
-                await _context.SaveChangesAsync();
 
                 IdentityUser user = new IdentityUser
                 {
@@ -45,6 +44,7 @@ namespace DriverService.Data
                     userManager.AddToRoleAsync(user, "Admin").Wait();
                     userManager.SetLockoutEnabledAsync(user, false).Wait();
                 }
+                await _context.SaveChangesAsync();
             }
         }
     }

@@ -6,13 +6,11 @@ using System.Threading.Tasks;
 
 namespace DriverService.Dtos.DriverProfiles
 {
-    public class DriverProfileInput
+    public class SetLongLatInput
     {
-
         [Required]
-        public string FirstName { get; set; }
+        public double LongNow { get; set; }
         [Required]
-        public string LastName { get; set; }
-
+        public double LatNow { get; set; }
     }
 }
