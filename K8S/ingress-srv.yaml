@@ -10,7 +10,7 @@ spec:
   - host: AnterAja.com
     http:
       paths:
-      - path: /api/admin/users
+      - path: /api/admins
         pathType: Prefix
         backend:
           service:
@@ -31,7 +31,7 @@ spec:
             name: driverservice-clusterip-srv
             port:
               number: 80
-      - path: /api/users
+      - path: /api/drivers
         pathType: Prefix
         backend:
           service:
