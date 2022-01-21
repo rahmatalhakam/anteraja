@@ -1,7 +1,8 @@
 ﻿namespace UserService.Helpers
 {
-    public class AppSettings
-    {
-        public string Secret { get; set; }
-    }
+  public class AppSettings
+  {
+    public string Secret { get; set; }
+    public string TransactionUrl { get; set; }
+  }
 }

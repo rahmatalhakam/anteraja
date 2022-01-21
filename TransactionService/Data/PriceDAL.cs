@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -45,18 +46,14 @@ namespace TransactionService.Data
       return result;
     }
 
-    public Task<Price> GetFeeByArea(string area)
+    public async Task<Price> GetFeeByArea(string area)
     {
-      try
-      {
-        if (area == null) area = "BASE";
-        var price = _db.Prices.Where(p => p.Area.ToLower().Contains(area.ToLower())).SingleOrDefault();
-        return Task.FromResult(price);
-      }
-      catch (System.Exception)
-      {
-        throw;
-      }
+
+      if (area == null) area = "BASE";
+      var price = _db.Prices.Where(p => p.Area.ToLower().Contains(area.ToLower())).SingleOrDefault();
+      if (price == null)
+        price = await GetById(1);
+      return price;
     }
   }
 }
