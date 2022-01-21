@@ -216,7 +216,9 @@ namespace AdminService.Data
             };
             var result = await _userManager.UpdateAsync(newUpdate);    
             
-    
+            
+            
+           
         }
     }
 }
