@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using DriverService.Data;
 using DriverService.Data.DriverProfiles;
-using DriverService.Data.Users;
+using DriverService.Data.Drivers;
 using DriverService.Helpers;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -81,7 +81,7 @@ namespace DriverService
                 };
             });
             services.AddTransient<DbInitializer>();
-            services.AddScoped<IUser, UserDAL>();
+            services.AddScoped<IDriver, DriverDAL>();
             services.AddScoped<IDriverProfile, DriverProfileDAL>();
 
 
