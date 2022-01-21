@@ -192,7 +192,7 @@ namespace AuthService.Controllers
       }
       catch (System.Exception ex)
       {
-        return BadRequest(ex);
+        return BadRequest(ex.Message);
       }
     }
   }

@@ -25,7 +25,5 @@ namespace DriverService.Controllers
       var result = await _order.GetOrders();
       return Ok(result);
     }
-
-
   }
 }
