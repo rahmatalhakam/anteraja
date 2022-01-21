@@ -35,17 +35,24 @@ namespace UserService.SyncDataService
                 new AuthenticationHeaderValue("Bearer", token);
         var response = await client.PostAsync(_appSettings.TransactionUrl + "/api/v1/Transactions/fee", data);
         var content = await response.Content.ReadAsStringAsync();
-
-        if (response.StatusCode == HttpStatusCode.BadRequest)
-        {
-          ErrorOutput error = JsonSerializer.Deserialize<ErrorOutput>(content);
-          throw new Exception(error.Message);
-        }
         if (!response.IsSuccessStatusCode)
         {
-          throw new Exception(response.StatusCode.ToString());
+          try
+          {
+            ErrorOutput error = JsonSerializer.Deserialize<ErrorOutput>(content);
+            throw new Exception(error.Message);
+          }
+          catch (System.Exception)
+          {
+            if (response.StatusCode == HttpStatusCode.BadRequest)
+              throw new Exception(await response.Content.ReadAsStringAsync());
+            throw new Exception(response.StatusCode.ToString());
+          }
+
         }
+        Console.WriteLine("==>>>>> " + content);
         FeeOutput responseData = JsonSerializer.Deserialize<FeeOutput>(content);
+        Console.WriteLine(JsonSerializer.Serialize<FeeOutput>(responseData));
         return responseData;
       }
     }

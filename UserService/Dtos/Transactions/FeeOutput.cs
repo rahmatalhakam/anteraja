@@ -4,13 +4,13 @@ namespace UserService.Dtos.Transactions
 {
   public class FeeOutput
   {
-    public string UserId { get; set; }
+    public string userId { get; set; }
 
     public int distance { get; set; }
-    public float Billing { get; set; }
-    public float PricePerKM { get; set; }
+    public float billing { get; set; }
+    public float pricePerKM { get; set; }
 
-    public string Area { get; set; }
+    public string area { get; set; }
     public bool canOrder { get; set; }
 
   }

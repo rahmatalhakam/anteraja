@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Security.Claims;
+using System.Text.Json;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
@@ -204,7 +205,11 @@ namespace TransactionService.Controllers
         int distance = Convert.ToInt32(Coordinate.DistanceTo(input.LatStart, input.LongStart, input.LatEnd, input.LongEnd));
         if (distance > 30)
         {
-          return BadRequest("Maximum distance is 30 Km");
+          throw new Exception(("Maximum distance is 30 Km"));
+        }
+        if (distance < 0)
+        {
+          throw new Exception("Invalid lat and long.");
         }
         var fee = await _price.GetFeeByArea(input.Area);
         var mutation = await _walletMutation.GetByWalletUserId(userWallet.Id);
@@ -217,6 +222,8 @@ namespace TransactionService.Controllers
         {
           feeOutput.canOrder = true;
         }
+        string json = JsonSerializer.Serialize<FeeOutput>(feeOutput);
+        Console.WriteLine(json);
         return Ok(feeOutput);
       }
       catch (System.Exception ex)
