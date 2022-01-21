@@ -1,0 +1,61 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-srv
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/use-regex: 'true'
+spec:
+  rules:
+  - host: AnterAja.com
+    http:
+      paths:
+      - path: /api/admins
+        pathType: Prefix
+        backend:
+          service:
+            name: adminservice-clusterip-srv
+            port: 
+              number: 80
+      - path: /api/users
+        pathType: Prefix
+        backend:
+          service:
+            name: userservice-clusterip-srv
+            port: 
+              number: 80        
+      - path: /api/driverprofiles
+        pathType: Prefix
+        backend:
+          service:
+            name: driverservice-clusterip-srv
+            port:
+              number: 80
+      - path: /api/drivers
+        pathType: Prefix
+        backend:
+          service:
+            name: driverservice-clusterip-srv
+            port:
+              number: 80
+      - path: api/v1/transactions
+        pathType: Prefix
+        backend:
+          service:
+            name: transactionservice-clusterip-srv
+            port:
+              number: 80
+      - path: api/v1/prices
+        pathType: Prefix
+        backend:
+          service:
+            name: transactionservice-clusterip-srv
+            port:
+              number: 80
+      - path: api/v1/wallets
+        pathType: Prefix
+        backend:
+          service:
+            name: transactionservice-clusterip-srv
+            port:
+              number: 80

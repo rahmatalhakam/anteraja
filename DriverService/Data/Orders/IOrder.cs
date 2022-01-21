@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using DriverService.Models;
-using DriverService.Dtos.Users;
 
 namespace DriverService.Data.Orders
 {

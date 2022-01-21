@@ -10,18 +10,18 @@ using DriverService.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using DriverService.Dtos.Users;
+using DriverService.Dtos.Drivers;
 
-namespace DriverService.Data.Users
+namespace DriverService.Data.Drivers
 {
-    public class UserDAL : IUser
+    public class DriverDAL : IDriver
     {
         private UserManager<IdentityUser> _userManager;
 
         private RoleManager<IdentityRole> _roleManager;
         private AppSettings _appSettings;
 
-        public UserDAL(UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager,
+        public DriverDAL(UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager,
             IOptions<AppSettings> appSettings)
         {
             _userManager = userManager;
@@ -68,7 +68,7 @@ namespace DriverService.Data.Users
             }
         }
 
-        public async Task<User> Authenticate(LoginInput input)
+        public async Task<Driver> Authenticate(LoginInput input)
         {
             var account = await _userManager.FindByNameAsync(input.Username);
             if (account == null)
@@ -85,7 +85,7 @@ namespace DriverService.Data.Users
             {
                 throw new Exception("Cannot Login, your account is Locked");
             }
-            var user = new User
+            var user = new Driver
             {
                 Id = account.Id,
                 Username = input.Username

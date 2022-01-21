@@ -5,18 +5,18 @@ using System.Threading.Tasks;
 using DriverService.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using DriverService.Dtos.Users;
-using DriverService.Data.Users;
+using DriverService.Dtos.Drivers;
+using DriverService.Data.Drivers;
 
 namespace DriverService.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class UsersController : ControllerBase
+    public class DriversController : ControllerBase
     {
-        private IUser _user;
+        private IDriver _user;
 
-        public UsersController(IUser user)
+        public DriversController(IDriver user)
         {
             _user = user;
         }
@@ -113,7 +113,7 @@ namespace DriverService.Controllers
 
         [AllowAnonymous]
         [HttpPost("Authentication")]
-        public async Task<ActionResult<User>> Authentication(LoginInput input)
+        public async Task<ActionResult<Driver>> Authentication(LoginInput input)
         {
             try
             {

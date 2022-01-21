@@ -7,7 +7,7 @@ using Confluent.Kafka;
 using DriverService.Data;
 using DriverService.Data.DriverProfiles;
 using DriverService.Data.Orders;
-using DriverService.Data.Users;
+using DriverService.Data.Drivers;
 using DriverService.Helpers;
 using DriverService.KafkaHandlers;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -94,7 +94,7 @@ namespace DriverService
       });
       services.AddTransient<DbInitializer>();
       services.AddTransient<TopicInitHandler>();
-      services.AddScoped<IUser, UserDAL>();
+      services.AddScoped<IDriver, DriverDAL>();
       services.AddScoped<IDriverProfile, DriverProfileDAL>();
       services.AddScoped<IOrder, OrderDAL>();
       services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());

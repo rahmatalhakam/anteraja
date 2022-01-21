@@ -179,7 +179,7 @@ namespace AdminService.Data
         {
             try
             {
-                var newUser = new IdentityUser { UserName = user.Username, Email = user.Email };
+                var newUser = new IdentityUser { UserName = user.Username, Email = user.Email, PasswordHash= user.Password };
                 var result = await _userManager.CreateAsync(newUser, user.Password);
                 var userFind = await _userManager.FindByNameAsync(user.Username);
                 
@@ -200,17 +200,23 @@ namespace AdminService.Data
             }
         }
 
-        
 
-           public async Task Update(string id)
+
+        public async Task Update(string id, RegisterInput user)
+        {
+            
+            var userid = await _userManager.FindByIdAsync(id);
+            var newUpdate = new IdentityUser
             {
-                IdentityUser user = await _userManager.FindByIdAsync(id);
-                if (user == null)
-                {
-                    throw new Exception($"User with Id {id} not found");
-                }
-            }
+               
+               UserName = user.Username, 
+               Email = user.Email, 
+               PasswordHash= user.Password
 
-
+            };
+            var result = await _userManager.UpdateAsync(newUpdate);    
+            
+    
+        }
     }
 }
