@@ -10,7 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace DriverService.Handlers
+namespace DriverService.KafkaHandlers
 {
   public class TopicInitHandler
   {

@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Confluent.Kafka;
 using DriverService.Data;
 using DriverService.Data.DriverProfiles;
+using DriverService.Data.Orders;
 using DriverService.Data.Users;
-using DriverService.Handlers;
 using DriverService.Helpers;
+using DriverService.KafkaHandlers;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -66,6 +68,8 @@ namespace DriverService
        .AddXmlDataContractSerializerFormatters();
       services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
+
+
       var kafkaConfig = Configuration.GetSection("KafkaConfig");
       services.Configure<KafkaConfig>(kafkaConfig);
       var appSettingSection = Configuration.GetSection("AppSettings");
@@ -92,7 +96,23 @@ namespace DriverService
       services.AddTransient<TopicInitHandler>();
       services.AddScoped<IUser, UserDAL>();
       services.AddScoped<IDriverProfile, DriverProfileDAL>();
+      services.AddScoped<IOrder, OrderDAL>();
       services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
+      // services.AddHostedService<ConsumerHandler>();
+      // services.AddSingleton<IHostedService, ConsumerHandler>();
+      // services.AddSingleton<IHostedService, KafkaConsumerHandler>();
+      // services.AddHostedService<ApacheKafkaConsumerService>();
+
+      services.AddSingleton<IHostedService, ProcessOrdersService>();
+
+      var producerConfig = new ProducerConfig();
+      var consumerConfig = new ConsumerConfig();
+      Configuration.Bind("producer", producerConfig);
+      Configuration.Bind("consumer", consumerConfig);
+
+      services.AddSingleton<ProducerConfig>(producerConfig);
+      services.AddSingleton<ConsumerConfig>(consumerConfig);
 
       services.AddControllers();
       services.AddSwaggerGen(c =>

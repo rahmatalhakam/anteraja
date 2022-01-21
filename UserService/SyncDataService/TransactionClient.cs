@@ -35,6 +35,7 @@ namespace UserService.SyncDataService
                 new AuthenticationHeaderValue("Bearer", token);
         var response = await client.PostAsync(_appSettings.TransactionUrl + "/api/v1/Transactions/fee", data);
         var content = await response.Content.ReadAsStringAsync();
+
         if (response.StatusCode == HttpStatusCode.BadRequest)
         {
           ErrorOutput error = JsonSerializer.Deserialize<ErrorOutput>(content);

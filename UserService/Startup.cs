@@ -93,8 +93,7 @@ namespace UserService
       services.AddHttpClient<ITransactionClient, TransactionClient>();
 
       services.AddControllers().AddNewtonsoftJson(options =>
-     options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore)
-         .AddXmlDataContractSerializerFormatters();
+     options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
       services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
       services.AddControllers();

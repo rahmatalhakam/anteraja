@@ -206,7 +206,6 @@ namespace TransactionService.Controllers
         {
           return BadRequest("Maximum distance is 30 Km");
         }
-
         var fee = await _price.GetFeeByArea(input.Area);
         var mutation = await _walletMutation.GetByWalletUserId(userWallet.Id);
         var feeOutput = new FeeOutput { UserId = input.UserId, distance = distance, Billing = distance * fee.PricePerKM, PricePerKM = fee.PricePerKM, Area = fee.Area };
@@ -222,7 +221,7 @@ namespace TransactionService.Controllers
       }
       catch (System.Exception ex)
       {
-        return BadRequest(ex);
+        return BadRequest(ex.Message);
       }
     }
 

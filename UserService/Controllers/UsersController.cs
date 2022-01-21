@@ -171,11 +171,12 @@ namespace AuthService.Controllers
     }
 
     [HttpPost("order")]
-    // [Authorize(Roles = "User")]
+    [Authorize(Roles = "User")]
     public async Task<ActionResult<OrderOutput>> Order([FromBody] FeeInput input)
     {
       try
       {
+
         var result = await _user.GetUserById(input.UserId);
         string token = Request.Headers["Authorization"];
         string[] tokenWords = token.Split(' ');
@@ -185,13 +186,13 @@ namespace AuthService.Controllers
           throw new Exception($"Saldo user id: {input.UserId} is not enough!");
         }
         //kalo benar kasihkan ke kafka
-        string value = JsonSerializer.Serialize(orderFee);
-        await _producerHandler.ProduceMessage(TopicList.OrderTopic, "new-order", value);
+        string value = JsonSerializer.Serialize(input);
+        await _producerHandler.ProduceMessage(TopicList.OrderTopic, TopicKeyList.NewOrder, value);
         return Ok(new OrderOutput { Message = "Order data sent successfully", Data = orderFee });
       }
       catch (System.Exception ex)
       {
-        return BadRequest(ex.Message);
+        return BadRequest(ex);
       }
     }
   }
