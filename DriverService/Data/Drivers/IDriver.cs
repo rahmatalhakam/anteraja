@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using DriverService.Models;
 using Microsoft.AspNetCore.Identity;
-using DriverService.Dtos.Users;
+using DriverService.Dtos.Drivers;
 
-namespace DriverService.Data.Users
+namespace DriverService.Data.Drivers
 {
-    public interface IUser
+    public interface IDriver
     {
         IEnumerable<UsernameOutput> GetAllUser();
         Task Registration(RegisterInput user);
@@ -15,7 +15,7 @@ namespace DriverService.Data.Users
         IEnumerable<RoleOutput> GetAllRole();
         Task AddRoleForUser(string username, string role);
         Task<List<string>> GetRolesFromUser(string username);
-        Task<User> Authenticate(LoginInput input);
+        Task<Driver> Authenticate(LoginInput input);
         Task LockUser(LockUserInput input);
         Task<UsernameOutput> GetUserById(string id);
     }

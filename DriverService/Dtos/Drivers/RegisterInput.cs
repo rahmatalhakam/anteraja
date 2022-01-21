@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace DriverService.Dtos.Users
+namespace DriverService.Dtos.Drivers
 {
     public class RegisterInput
     {

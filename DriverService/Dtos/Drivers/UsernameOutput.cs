@@ -1,4 +1,4 @@
-﻿namespace DriverService.Dtos.Users
+﻿namespace DriverService.Dtos.Drivers
 {
     public class UsernameOutput
     {
