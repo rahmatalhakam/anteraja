@@ -24,7 +24,7 @@ namespace TransactionService.SyncDataService
     }
     public async Task<bool> GetById(string UserId)
     {
-      var response = await _httpClient.GetAsync(_appSettings.DriverUrl + "/api/Users/" + UserId);
+      var response = await _httpClient.GetAsync(_appSettings.DriverUrl + "/api/Drivers/" + UserId);
       Console.WriteLine(response.StatusCode);
       if (response.IsSuccessStatusCode)
       {

@@ -63,7 +63,6 @@ namespace DriverService.KafkaHandlers
                {
                  try
                  {
-                   _logging.LogInformation("masukk");
                    var result = await context.Orders.AddAsync(order);
                    await context.SaveChangesAsync();
                  }
