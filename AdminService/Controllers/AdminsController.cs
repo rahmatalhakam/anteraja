@@ -14,11 +14,11 @@ namespace AdminService.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class UsersController : ControllerBase
+    public class AdminsController : ControllerBase
     {
         private IUser _user;
         private IMapper _mapper;
-        public UsersController(IUser user, IMapper mapper)
+        public AdminsController(IUser user, IMapper mapper)
         {
              _user = user;
              _mapper = mapper;
@@ -97,7 +97,7 @@ namespace AdminService.Controllers
         [HttpPut("{id}")]
         public async Task<ActionResult> Update(string id, RegisterInput user)
         {
-            //catatan: masih belum bener controllernya
+            //catatan: masih belum berhasil ke update
                 try
                 {
                     await _user.Update(id, user);
