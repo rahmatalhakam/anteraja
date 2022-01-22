@@ -4,11 +4,11 @@ This project is for AnterAja Backend and Microservice ++ !!!
 Layanan AnterAja merupakan layanan pemesanan ojek secara online. Layanan ini dapat memudahkan anda dalam menemukan ojek yang cepat dan murah.
 
 
-## **Architecture** (TODO: Rahmat)
+## **Architecture** 
 
-![architexture-pic](update_later.jpg)
+![architexture-pic](https://github.com/rahmatalhakam/anteraja/blob/main/case-study/mircoservice-architecture-anteraja.png)
 
-(brief explanation)
+Terdapat 4 service utama yang terdiri dari user service, admin service, driver service, dan transaction service. Database yang digunakan adalah satu sql server yang menampung 4 database dari 4 service yang berbeda. Api gateway menggunakan ingress-nginx. Message broker menggunakan kafka untuk menghandle order yang dilakukan oleh user dan akan di consume oleh driver service. 
 
 ## **How to build docker file**
 
