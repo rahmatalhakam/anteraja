@@ -5,8 +5,9 @@ using System.Threading.Tasks;
 
 namespace DriverService.Dtos.Orders
 {
-    public class OrderInput
+    public class SuccessOutput
     {
-        public int OrderId { get; set; }
+        public string Message { get; set; }
+        public CreateTransactionOutput Data { get; set; }
     }
 }
