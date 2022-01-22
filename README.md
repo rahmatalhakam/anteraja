@@ -1,6 +1,8 @@
 # **AnterAja**
 
-This project is for AnterAja Backend and Microservice ++ !!! (add more explanation)
+This project is for AnterAja Backend and Microservice ++ !!! 
+Layanan AnterAja merupakan layanan pemesanan ojek secara online. Layanan ini dapat memudahkan anda dalam menemukan ojek yang cepat dan murah.
+
 
 ## **Architecture** (TODO: Rahmat)
 
@@ -37,7 +39,7 @@ kubectl apply -f transactionservice-depl.yaml
 
 ## **Services**
 
-(brief explanation)
+Layanan AnterAja menyediakan beberapa service diantaranya user service, driver service, transaction service dan admin service untuk memudahkan anda dalam menggunakan layanan ini. Service ini didukung unggul dengan adanya fitur seperti mendapatkan driver terdekat sehingga user tidak terlalu lama menunggu order, dan adanya wallet untuk driver dan user dapat memudahkan transaksi cashless.
 
 ### User Service
 
