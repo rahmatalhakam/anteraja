@@ -138,10 +138,13 @@ Features:
    - Melakukan pengecekan status driver terlebih dahulu, 
      jika status driver tersebut "blokir" maka driver tidak dapat accept order.
    - Melakukan pengecekan lat dan long driver dengan lat dan long start yang didapat dari hasil 'consume order kafka'. 
-     Jika jarak > 5 km (atau menyesuaikan) maka driver tidak dapat melakukan accept order. Handle ini digunakan agar driver yang melakukan accept order, lokasinya tidak terlalu jauh dengan lokasi user.
+     Jika jarak > 5 km (atau menyesuaikan) maka driver tidak dapat melakukan accept order. Handle ini digunakan agar driver yang melakukan accept order, 
+     lokasinya tidak terlalu jauh dengan lokasi user.
+   - Melakukan request post ke transaction service dengan input berupa user id, lat start, long start, lat end, long end, area dari kafka, ditambah driver id. 
+     Output berupa id transaction yang akan digunakan untuk finish order.
+   - Jika ada area maka price sesuai dengan price pada area tersebut, jika area tidak dimasukkan maka price yang akan digunakan adalah base price.
    - Hanya dapat dilakukan oleh Driver.
-   //belum selesai
-
+   
 8. Get Driver By Id
    - Input berupa driver id. 
    - Melakukan pengecekan status driver terlebih dahulu, 
