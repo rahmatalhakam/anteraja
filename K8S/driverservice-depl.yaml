@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: driverservice
-        image: dwichynngrm/driverservice:latest
+        image: rahmatalhakam/driverservice:latest
 ---
 apiVersion: v1
 kind: Service
