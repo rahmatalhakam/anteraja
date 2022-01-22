@@ -10,9 +10,10 @@ namespace DriverService.Data.Orders
     {
 
         Task<Order> Insert(Order user);
+        Task Delete(int id);
         Task<IEnumerable<Order>> GetOrders();
-        Task<Order> GetOrderById(int id);
-        Task<Order> AcceptOrder(OrderInput input);
+        Task<Order> GetById(int id);
+        Task<Order> CheckOrder(AcceptOrderInput input);
 
     }
 }

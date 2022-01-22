@@ -24,7 +24,7 @@ namespace DriverService.Data.Orders
 
         }
 
-        public Task<Order> AcceptOrder(OrderInput input)
+        public Task<Order> CheckOrder(AcceptOrderInput input)
         {
             var currentDriverId = _httpContextAccessor.HttpContext.User.FindFirstValue("DriverId");
             var driver = _context.Users.Where(u => u.Id == currentDriverId).SingleOrDefault();
@@ -37,12 +37,43 @@ namespace DriverService.Data.Orders
                 throw new Exception("Cannot accept order, your account is locked. Please Contact Admin");
             }
 
-            var orderFind = GetOrderById(input.OrderId);
+            var profile = _context.DriverProfiles.Where(dp => dp.DriverId == driver.Id).SingleOrDefault();
+            if (profile == null)
+            {
+                throw new Exception("Cannot accept order, please set your Profile first");
+            }
+            if (profile.LatNow == 0 && profile.LongNow == 0)
+            {
+                throw new Exception("Cannot accept order, please set your current position on your Profile first");
+            }
+            else
+            {
+                profile.LatNow = input.LatNow;
+                profile.LongNow = input.LongNow;
+                _ = _context.SaveChangesAsync();
+            }
+
+            var orderFind = GetById(input.OrderId);
 
             return orderFind;
         }
 
-        public async Task<Order> GetOrderById(int id)
+        public async Task Delete(int id)
+        {
+            var result = await GetById(id);
+            if (result == null) throw new Exception("Orders not found");
+            try
+            {
+                _context.Orders.Remove(result);
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateException dbEx)
+            {
+                throw new Exception($"Error: {dbEx.Message}");
+            }
+        }
+
+        public async Task<Order> GetById(int id)
         {
             var order = await _context.Orders.FindAsync(id);
             if (order == null)
