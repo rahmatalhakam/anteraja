@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: transactionservice
-        image: dwichynngrm/transactionservice:latest
+        image: rahmatalhakam/transactionservice:latest
 ---
 apiVersion: v1
 kind: Service

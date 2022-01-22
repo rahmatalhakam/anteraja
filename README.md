@@ -10,7 +10,6 @@ This project is for AnterAja Backend and Microservice ++ !!! (add more explanati
 
 ## **How to build docker file**
 
-
 1. docker build -t OWNER/adminservice .
 2. docker push OWNER/adminservice
 3. docker build -t OWNER/driverservice .
@@ -20,22 +19,21 @@ This project is for AnterAja Backend and Microservice ++ !!! (add more explanati
 7. docker build -t OWNER/userservice .
 8. docker push OWNER/userservice
 
-
-
 ## **How to run on kubernetes**
 
-1. helm repo add bitnami https://charts.bitnami.com/bitnami
-2. helm install my-release bitnami/kafka
-3. kubectl apply -f adminservice-depl.yaml
-4. kubectl apply -f driverservice-depl.yaml
-5. kubectl apply -f transaction-depl.yaml
-6. kubectl apply -f userservice-depl.yaml
-7. kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.1.0/deploy/static/provider/cloud/deploy.yaml
-8. kubectl apply -f ingress-srv.yaml
-9. kubectl apply -f local-pvc.yaml
-10. kubectl create secret generic mssql --from-literal=SA_PASSWORD="Kosongkan@Saja"
-11. kubectl apply -f mssql-depl.yaml
-
+```bash
+helm repo add bitnami https://charts.bitnami.com/bitnami
+helm install my-release bitnami/kafka
+kubectl create secret generic mssql --from-literal=SA_PASSWORD="Kosongkan@Saja"
+kubectl apply -f mssql-plat-depl.yaml
+kubectl apply -f local-pvc.yaml
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.0.3/deploy/static/provider/cloud/deploy.yaml
+kubectl apply -f ingress-srv.yaml
+kubectl apply -f adminservice-depl.yaml
+kubectl apply -f userservice-depl.yaml
+kubectl apply -f driverservice-depl.yaml
+kubectl apply -f transactionservice-depl.yaml
+```
 
 ## **Services**
 
@@ -55,16 +53,16 @@ Features:
 
 2. Login
 
-   - ketika login akan di cek status user terlebih dahulu, 
+   - ketika login akan di cek status user terlebih dahulu,
      jika terblokir maka user tidak dapat login.
    - user dapat login dan mendapatkan token dengan role user.
 
 3. Order
 
-   - cek status user, jika blokir tidak bisa order 
+   - cek status user, jika blokir tidak bisa order
    - check lat dan long start dengan lat dan long end, jika jarak > 30 km (atau menyesuaikan) order ditola
-   - check order fee ke transaction service, dengan input user id, lat start, long end, lat start, long end, area? 
-   - return dari check order fee berupa persetujuan bisa tidaknya melakukan order jika user id ditambahkan 
+   - check order fee ke transaction service, dengan input user id, lat start, long end, lat start, long end, area?
+   - return dari check order fee berupa persetujuan bisa tidaknya melakukan order jika user id ditambahkan
    - input order berupa user id, lat start, long start, lat end, long end, area?
 
 ### Driver Service

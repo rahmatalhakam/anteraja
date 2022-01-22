@@ -7,7 +7,7 @@ metadata:
     nginx.ingress.kubernetes.io/use-regex: 'true'
 spec:
   rules:
-  - host: AnterAja.com
+  - host: anteraja.bootcamp
     http:
       paths:
       - path: /api/admins
@@ -38,21 +38,28 @@ spec:
             name: driverservice-clusterip-srv
             port:
               number: 80
-      - path: api/v1/transactions
+      - path: /api/orders
+        pathType: Prefix
+        backend:
+          service:
+            name: driverservice-clusterip-srv
+            port:
+              number: 80
+      - path: /api/v1/transactions
         pathType: Prefix
         backend:
           service:
             name: transactionservice-clusterip-srv
             port:
               number: 80
-      - path: api/v1/prices
+      - path: /api/v1/prices
         pathType: Prefix
         backend:
           service:
             name: transactionservice-clusterip-srv
             port:
               number: 80
-      - path: api/v1/wallets
+      - path: /api/v1/wallets
         pathType: Prefix
         backend:
           service:
