@@ -138,6 +138,7 @@ Features:
    - Melakukan pengecekan lat dan long driver dengan lat dan long start yang didapat dari hasil 'consume order kafka'. 
      Jika jarak > 5 km (atau menyesuaikan) maka driver tidak dapat melakukan accept order. Handle ini digunakan agar driver yang melakukan accept order, lokasinya tidak terlalu jauh dengan lokasi user.
    - Hanya dapat dilakukan oleh Driver.
+   //belum selesai
 
 8. Get Driver By Id
    - Input berupa driver id. 
@@ -176,7 +177,7 @@ Service ini ditujukan untuk admin layanan anteraja. Di dalam service ini admin d
 
 ### Transaction Service
 
-(brief explanation)
+Service ini ditujukan untuk pengguna, driver dan admin layanan anteraja. Di dalam service ini admin dapat melihat semua transaksi, melakukan perubahan harga, melihat keseluruhan data harga. Untuk user pada service ini dapat melihat transaksi, transaction fee, jarak, melakukan top up saldo, membuat akun user wallet, withdraw saldo serta melihat saldo terakhir pada wallet. Untuk driver pada service ini dapat melakukan post transaction, finish transaction, melihat transaksi, jarak, melakukan top up saldo, membuat akun user wallet, withdraw saldo serta melihat saldo terakhir pada wallet.
 
 **Features:**
 
@@ -191,5 +192,76 @@ Service ini ditujukan untuk admin layanan anteraja. Di dalam service ini admin d
    - Melakukan pengecekan field area, jika ada areanya maka set price berdasarkan area, 
      jika area tersebut tidak ada maka set base price.
    - Set billing berdasarkan price id dikali dengan jarak yang ditempuh. 
-   - Ketika berhasil melakukan transaction, saldo user akan dikurangi dengan request put ke transaction/wallet withdraw dengan input user id, dan debit=billing.
+   - Ketika berhasil melakukan transaction, saldo user akan dikurangi dengan melakukan request put ke transaction/wallet withdraw dengan input user id, dan debit=billing.
    - Hanya dapat dilakukan oleh Driver.
+
+
+2. Finish Transaction
+
+   - Input berupa driver id dan transaction id.
+   - Melakukan pengecekan transaction id dan driver id, jika kedua id tersebut tidak ditemukan, maka proses tersebut gagal.
+   - set status otomatis menjadi finished=2
+   - ketika berhasil melakukan finish trasaction, saldo driver akan bertambah dengan melakukan request put ke transaction/wallet top up dengan input berupa driver id dan credit=billing.
+   - Hanya dapat dilakukan oleh Driver.
+
+3. Get Transactions
+
+   - Untuk mendapatkan list data seluruh transaksi berupa id transaksi, user id, driver id, lat dan long start, lat dan long end, created at, status, distance, billing, status order, dan price.
+   - Hanya dapat dilakukan oleh Admin.
+
+4. Get Transactions By UserId/DriverId
+
+   - Melakukan pengecekan role berdasarkan token, jika token tersebut role as user, maka id yang diambil adalah id user, dan ditampilkan data user. 
+   - Melakukan pengecekan role berdasarkan token, jika token tersebut role as driver, maka id yang diambil adalah id driver, dan ditampilkan data driver. 
+   - Hanya dapat dilakukan oleh Driver dan User.
+
+5. Update Price
+
+   - Input berupa price id dan price.
+   - Sebelum melakukan input price, dilakukan pengecekan price id terlebih dahulu,
+     jika price id tersebut tidak ditemukan, proses update tersebut gagal.  
+   - Hanya dapat dilakukan oleh Admin.
+
+6. Get Prices
+
+   - Untuk mendapatkan list data seluruh price.
+   - Hanya dapat dilakukan oleh Admin.
+
+7. Get Transaction Fee By User Id
+
+   - Melakukan pengecekan 'order fee' dengan input user id, lat start, long end, lat start, long end, area.
+   - Melakukan pengecekan user wallet apakah sudah terdaftar pada user wallet atau belum.
+   - Melakukan pengecekan billing berdasarkan saldo user id, jika billing < saldo, 
+     maka order dapat dilakukan dengan output info price, jika tidak maka user tidak dapat melakukan order.
+   - Hanya dapat dilakukan oleh User. 
+   
+
+8. Get Distance
+
+   - Untuk mendapatkan jarak dengan input lat dan long start, lat dan long end.
+
+9.  Top Up Saldo
+
+    - Input berupa credit dan id.
+    - Melakukan pengecekan id apakah sudah terdaftar pada wallet user atau belum. Jika belum maka error, dan harus membuat user wallet terlebih dahulu.
+    - Hanya dapat dilakukan oleh Driver dan User.
+
+10. Add User Wallet
+ 
+    - Input berupa user/driver id.
+    - Melakukan pengecekan user id / driver id, jika user/driver id tersedia maka dapat mendaftar user wallet.
+    - Melakukan pengecekan customer id, jika user/driver sudah terdaftar pada user wallet maka user/driver tidak dapat melakukan pendaftaran user wallet lagi.
+    - Hanya dapat dilakukan oleh Driver dan User.
+
+11. Withdraw Saldo
+
+    - Input berupa debit dan id.
+    - Melakukan pengecekan user id / driver id, jika user/driver id tersedia maka dapat melakukan withdraw saldo.
+    - Melakukan pengecekan customer id, jika user/driver sudah terdaftar pada user wallet maka user/driver dapat melakukan withdraw saldo.
+    - Hanya dapat dilakukan oleh Driver dan User.
+
+12. Get Saldo By Id
+
+    - Input berupa customer id.
+    - Melakukan pengecekan customer id, jika customer id tersedia maka akan menampilkan saldo terakhir.
+    - Hanya dapat dilakukan oleh Driver dan User.
