@@ -88,7 +88,7 @@ namespace TransactionService
 
       services.AddSwaggerGen(c =>
       {
-        c.SwaggerDoc("v1", new OpenApiInfo { Title = "PaymentService", Version = "v1" });
+        c.SwaggerDoc("v1", new OpenApiInfo { Title = "TransactionService", Version = "v1" });
         var securitySchema = new OpenApiSecurityScheme
         {
 
